@@ -2,7 +2,7 @@
       "Heroes": {
             "Cid, the Helpful Adventurer": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 7,
                   "Gilded": false,
@@ -10,7 +10,7 @@
             },
             "Treebeast": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -18,7 +18,7 @@
             },
             "Ivan, the Drunken Brawler": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 6,
                   "Gilded": false,
@@ -26,7 +26,7 @@
             },
             "Brittany, Beach Princess": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -34,7 +34,7 @@
             },
             "The Wandering Fisherman": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -42,7 +42,7 @@
             },
             "Betty Clicker": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -50,7 +50,7 @@
             },
             "The Masked Samurai": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -58,7 +58,7 @@
             },
             "Leon": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -66,7 +66,7 @@
             },
             "The Great Forest Seer": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -74,7 +74,7 @@
             },
             "Alexa, Assassin": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -82,7 +82,7 @@
             },
             "Natalia, Ice Apprentice": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -90,7 +90,7 @@
             },
             "Mercedes, Duchess of Blades": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -98,7 +98,7 @@
             },
             "Bobby, Bounty Hunter": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -106,7 +106,7 @@
             },
             "Broyle Lindeoven, Fire Mage": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -114,7 +114,7 @@
             },
             "Sir George II, King's Guard": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -122,7 +122,7 @@
             },
             "King Midas": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 6,
                   "Gilded": false,
@@ -130,7 +130,7 @@
             },
             "Referi Jerator, Ice Wizard": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -138,7 +138,7 @@
             },
             "Abaddon": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -146,7 +146,7 @@
             },
             "Ma Zhu": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -154,7 +154,7 @@
             },
             "Amenhotep": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 3,
                   "Gilded": false,
@@ -162,7 +162,7 @@
             },
             "Beastlord": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -170,7 +170,7 @@
             },
             "Athena, Goddess of War": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -178,7 +178,7 @@
             },
             "Aphrodite, Goddess of Love": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -186,7 +186,7 @@
             },
             "Shinatobe, Wind Deity": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 5,
                   "Gilded": false,
@@ -194,7 +194,7 @@
             },
             "Grant, The General": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
@@ -202,7 +202,7 @@
             },
             "Frostleaf": {
                   "Level": 0,
-                  "Level stage": 0,
+                  "Level ceiling": 1,
                   "Skill level": 0,
                   "Max skill level": 4,
                   "Gilded": false,
