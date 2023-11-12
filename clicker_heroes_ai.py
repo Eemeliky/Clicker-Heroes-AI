@@ -8,7 +8,15 @@ import numpy as np
 import tkinter as tk
 import json
 
-import customtkinter  # noqa
+# import customtkinter
+
+"""
+pip install opencv-python
+pip install pyautogui
+pip install pynput
+pip install pywin32
+"""
+
 
 # Normal skill unlocks
 SKILL_UNLOCKS = {"Normal": [10, 25, 50, 75, 100, 125, 150]}
@@ -71,13 +79,14 @@ class Hero(object):
     Class for Heroes and their attributes
     """
 
-    def __init__(self, name, level, level_ceiling, skill_level, max_skill_level, gilded):
+    def __init__(self, name, level, level_ceiling, skill_level, max_skill_level, gilded, unique_ups):
         self.name = name
         self.level = level
         self.skill_level = skill_level  # Current skill level
         self.max_skill_level = max_skill_level  # Max skill level for the hero
         self.level_ceiling = level_ceiling  # Target level for upgrading the hero
         self.gilded = gilded
+        self.unique_ups = unique_ups
 
     def level_up(self):
         self.level += 1
@@ -149,7 +158,7 @@ class GameState:
         self.hero_name = ""
         self.hero_index = h_idx
 
-        self.y = 0
+        self.hero_name_xy = (0, 0)
         self.scroll_bot = False
         self.scroll_top = True
         self.hero_on_screen = False
@@ -302,9 +311,9 @@ def draw_detection(game, hero):
             starting_point = (int(x), int(y))
             ending_point = (int(x + width), int(y + height))
             cv2.rectangle(img, starting_point, ending_point, color=(255, 0, 0), thickness=2)
-            game.hero_on_screen = True
+            game.hero_name_xy = (x, y)
         else:
-            game.hero_on_screen = False
+            game.hero_name_xy = (-1, -1)
         render(img)
 
 
@@ -325,11 +334,12 @@ def upgrade_first_levels(img, hero, game):  # Upgrades first 2 levels when templ
 
 def upgrade_hero(img, hero, game):
     if hero.skill_unlocked():
-        y = game.y + 45  # 45px is offset from the top of the hero name to the upgrade button
-        if (img[y, 197 + (SKILL_OFFSET * hero.skill_level), 0] > 50) \
-                | (img[y, 197 + (SKILL_OFFSET * hero.skill_level), 1] > 50) \
-                | (img[y, 197 + (SKILL_OFFSET * hero.skill_level), 2] > 50):
-            pyautogui.moveTo(SKILL_X_COORDINATE + (SKILL_OFFSET * hero.skill_level), game.hero_y)
+        y = game.hero_name_xy[1] + 45  # 45px is offset from the top of the hero name to the upgrade button
+        pixel_val = [img[y, 197 + (SKILL_OFFSET * hero.skill_level), 0],
+                     img[y, 197 + (SKILL_OFFSET * hero.skill_level), 1],
+                     img[y, 197 + (SKILL_OFFSET * hero.skill_level), 2]]
+        if min(pixel_val) > 50:
+            pyautogui.moveTo(SKILL_X_COORDINATE + (SKILL_OFFSET * hero.skill_level), y)
             pyautogui.click()
             pyautogui.moveTo(AUTOCLICKER_POINT)
             hero.level_skill()
@@ -418,7 +428,7 @@ def level_checker(game, img):
             game.grind_end()
 
 
-def click(mouse, button):
+def auto_click(mouse, button):
     if cursor_center:
         mouse.click(button)
         mouse.click(button)
@@ -523,11 +533,10 @@ def game_loop(game_win, heroes, game, powers):
     controls_win.change_position(WINDOW_WIDTH, round(WINDOW_HEIGHT - 260))
     while controls_win.program_running:
         controls_win.root.update()
-        img = update_screen()
+        img = get_screenshot()
+        hero = heroes[game.hero_idx]
+        game.hero_name = hero.name
         if controls_win.logic_running & cursor_center():
-            hero = heroes[game.hero_idx]
-            game.hero_name = hero.name
-            img = game_win.update_screen()
             chest_detection(img, heroes, game_win)
             bee_detection(img, game, game_win, mouse, button)
             # ascend_logic(game, heroes, powers)
@@ -545,12 +554,12 @@ def game_loop(game_win, heroes, game, powers):
                             scroll_up(img, game, game_win, heroes)
             power_unlocker(game, hero, powers)
             power_usage(game, powers)
-            click(mouse, button)
+            auto_click(mouse, button)
             present_detection(img, game)
         else:
             game.hero_name = None
-            img = game_win.update_screen()
-            draw_detection(img, game, heroes, game_win)
+            img = get_screenshot()
+            draw_detection(game, hero)
     save_data(game, heroes, powers)
 
 
@@ -563,14 +572,15 @@ def load_from_file():
     Loads the gamestate from save.json or creates one from setup.json
     :return:
     """
+    heroes, game_data, powers = ([] for _ in range(3))
     save_file = False
     try:
         with open(SAVE_PATH + "save.json", 'r', encoding='utf-8') as file:
             data = json.load(file)
-            heroes = data["Heroes"]
+            h_data = data["Heroes"]
             SKILL_UNLOCKS["Unique"] = data["Unique skills"]
-            powers = data["Powers"]
-            game_data = data["Gamestate"]
+            p_data = data["Powers"]
+            g_data = data["Gamestate"]
             save_file = True
     except IOError:
         pass
@@ -579,22 +589,34 @@ def load_from_file():
         try:
             with open("setup.json", 'r', encoding='utf-8') as file:
                 data = json.load(file)
-                heroes = data["Heroes"]
+                h_data = data["Heroes"]
                 SKILL_UNLOCKS["Unique"] = data["Unique skills"]
-                powers = data["Powers"]
-                game_data = data["Gamestate"]
+                p_data = data["Powers"]
+                g_data = data["Gamestate"]
         except IOError:
             print("'setup.json' NOT FOUND!")
-            return [], [], []
+            return heroes, game_data, powers
+
+    for name in h_data:
+        new_hero = Hero(name,
+                        h_data[name]["Level"],
+                        h_data[name]["Level ceiling"],
+                        h_data[name]["Skill level"],
+                        h_data[name]["Max skill level"],
+                        h_data[name]["Gilded"],
+                        h_data[name]["Unique skills"]
+                        )
+
+        heroes.append(new_hero)
 
     return heroes, game_data, powers
 
 
 def setup():
-    hwnd = win32gui.FindWindow(None, 'Clicker Heroes')
-    win32gui.SetForegroundWindow(hwnd)
     heroes, game_data, powers = load_from_file()
-    if heroes:
+    hwnd = win32gui.FindWindow(None, 'Clicker Heroes')
+    if heroes and hwnd:
+        win32gui.SetForegroundWindow(hwnd)
         win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
         print("SETUP DONE!")
         game_loop(heroes, game_data, powers)
