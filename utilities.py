@@ -1,8 +1,7 @@
 import pyautogui
 import config
 import tkinter as tk
-import numpy as np
-from time import time, sleep
+from time import time
 from pynput.mouse import Controller, Button
 
 
@@ -16,8 +15,8 @@ class ControlWindow(object):
         self.root.title("CONTROLS")
         self.root.geometry("100x200")
         self.root.configure(bg='grey')
-        self.logic_running = False
-        self.program_running = True
+        self.logic = False
+        self.running = True
         self.start_stop_button = tk.Button(self.root, text="Start/Stop", command=lambda: self.start_stop(),
                                            height=2, width=15)
         self.re_center_button = tk.Button(self.root, text="Re-center cursor",
@@ -28,23 +27,24 @@ class ControlWindow(object):
         self.start_stop_button.place(x=3, y=40)
         self.re_center_button.place(x=3, y=80)
         self.stop_button.place(x=3, y=120)
+        self.change_position()
 
     def start_stop(self):
-        if not self.logic_running:
-            self.logic_running = True
+        if not self.logic:
+            self.logic = True
             pyautogui.moveTo(config.AC_POINT)
             return
-        self.logic_running = False
+        self.logic = False
 
     def stop(self):
-        self.program_running = False
+        self.running = False
         self.root.destroy()
 
     def mainloop(self):
         self.root.mainloop()
 
-    def change_position(self, x, y):
-        self.root.geometry('+{}+{}'.format(x, y))
+    def change_position(self):
+        self.root.geometry('+{}+{}'.format(config.WINDOW_WIDTH, round(config.WINDOW_HEIGHT - 260)))
 
 
 class Hero(object):
@@ -94,13 +94,19 @@ class Hero(object):
 
 
 class Power(object):
+    """
+    Class for Powers and their attribute
+    """
 
-    def __init__(self, name, cooldown, key, state):
+    def __init__(self, name, cooldown, key, state, hero, level, skill):
         self.name = name
         self.unlocked = state
         self.cooldown = cooldown
-        self.cd_timer = 0
+        self.cd_timer = cooldown + 1
         self.key = key
+        self.hero = hero
+        self.level = level
+        self.skill = skill
 
     def unlock(self):
         self.unlocked = True
@@ -117,80 +123,39 @@ class Power(object):
 
 class GameData:
     """
-    Class for game's attributes and stats
+    Class for game variables
     """
 
-    def __init__(self, level, ascension, transcend, heroes, h_idx, powers):
+    def __init__(self, level, heroes, h_idx, powers, ascension, transcend):
         self.heroes = heroes
+        self.hero_index = h_idx
+        self.hero = self.heroes[self.hero_index]
         self.powers = powers
         self.level = level
+        self.control_window = None
         self.ascensions = ascension
         self.transcends = transcend
         self.last_power = ""
-        self.grind_mode = False
-        self.boss_timer = None
-        self.grind_timer = None
-        self.hero_index = h_idx
-        self.hero = self.heroes[self.hero_index]
-        self.img = np.array([])
-
+        self.boss_timer = 0
+        self.grind_timer = 0
         self.hero_name_xy = (0, 0)
-        self.scroll_bot = False
-        self.scroll_top = True
-        self.hero_on_screen = False
+        self.scroll_bar = config.SCROLL_POSITIONS[0]
 
-        self.boss = False
-        self.first_levels = True
+    def create_control_win(self):
+        self.control_window = ControlWindow()
 
-    def change_lvl(self):
-        if not self.grind_mode:
-            click_on_point(813, 85)
-            self.level += 1
-        else:
-            click_on_point(728, 82)
-            self.level -= 1
-        self.boss_timer = None
-        self.boss = False
-        print("Game level: {}".format(self.level))
-
-    def boss_fight(self):
-        self.boss = True
-        self.boss_timer = time()
-        print("BOSS TIME!")
-
-    def grind_start(self):
-        self.grind_mode = True
-        self.grind_timer = time()
-        self.change_lvl()
-        print("GRINDING TIME!")
-
-    def grind_end(self):
-        self.grind_mode = False
-        self.grind_timer = None
-        self.change_lvl()
-        print("GRINDING ENDED!")
-
-    def next_hero(self):
+    def change_hero(self):
         self.hero_index += 1
-
-    def ascend(self):
-        self.level = 1
-        self.ascensions += 1
-        self.grind_mode = False
-        self.boss_timer = None
-        self.grind_timer = None
-        self.scroll_bot = False
-        self.scroll_top = True
-        self.hero_on_screen = False
-        self.boss = False
-        self.first_levels = True
-        click_on_point(1000, 245, False)
-        sleep(0.1)
-        click_on_point(460, 450, False)
-        sleep(0.2)
+        if self.hero_index == len(self.heroes):
+            self.hero_index = 0
+        self.hero = [self.hero_index]
 
 
-def cursor_center():
+def cursor_ready():
+    """
+    Checks if the cursor on the correct position for autoclicker
+    :return:
+    """
     x, y = pyautogui.position()
     if (x == config.AC_POINT[0]) & (y == config.AC_POINT[1]):
         return True
@@ -198,6 +163,11 @@ def cursor_center():
 
 
 def click_on_point(x, y, _return=True):
+    """
+    :param x: x-coordinate on screen
+    :param y: y-coordinate on screen
+    :param _return: flag for returning to autoclicker point
+    """
     pyautogui.moveTo(x, y)
     pyautogui.click()
     if _return:
@@ -205,12 +175,24 @@ def click_on_point(x, y, _return=True):
 
 
 def get_pixel_val(img):
+    """
+    :param img: Image
+    :return: pixel value that the cursor points to
+    """
     x, y = pyautogui.position()
     return img[y, x, :]
 
 
-def class_dump(h_data, g_data, p_data):
-    h_temp = []
+def create_game_data(h_data, g_data, p_data):
+    """
+    :param h_data: Dict with heroes data
+    :param g_data: Dict with game data
+    :param p_data: Dict with powers data
+    :return: GameData class object
+    """
+    h_tmp = []
+    p_tmp = []
+    h_idx = 0
     for name in h_data:
         new_hero = Hero(name,
                         h_data[name]["Level"],
@@ -220,30 +202,37 @@ def class_dump(h_data, g_data, p_data):
                         h_data[name]["Gilded"],
                         h_data[name]["Unique skills"]
                         )
+        h_tmp.append(new_hero)
+        if g_data["Current hero"] == new_hero.name:
+            h_idx = len(h_tmp) - 1
 
-        h_temp.append(new_hero)
+    for name in p_data:
+        new_power = Power(name,
+                          p_data[name]["Cooldown"],
+                          p_data[name]["Key"],
+                          p_data[name]["Unlocked"],
+                          p_data[name]["Unlock hero"],
+                          p_data[name]["Unlock level"],
+                          p_data[name]["Unlock skill"]
+                          )
+        p_tmp.append(new_power)
 
-
-def level_checker(game):
-    if game.level % 5 == 0:
-        if not game.boss_timer:
-            game.boss_fight()
-        elif (game.img[85, 813, :] == np.array([72, 122, 198])).all():
-            print("BOSS DEFEATED IN {:.2f}s".format(time() - game.boss_timer))
-            game.change_lvl()
-        elif (time() - game.boss_timer) > 30:
-            game.grind_start()
-    elif not game.grind_mode:
-        if (game.img[85, 813, :] == np.array([72, 122, 198])).all():  # [72, 122, 198]
-            game.change_lvl()
-    elif game.grind_timer:
-        if (time() - game.grind_timer) > 180:
-            game.grind_end()
+    game = GameData(g_data["Level"],
+                    h_tmp,
+                    h_idx,
+                    p_tmp,
+                    g_data["Ascension level"],
+                    g_data["Transcend level"]
+                    )
+    return game
 
 
 def auto_click():
+    """
+    *3x ClICKS* on the autoclicker point
+    """
     mouse = Controller()
-    if cursor_center:
+    if cursor_ready:
         mouse.click(Button.left)
         mouse.click(Button.left)
         mouse.click(Button.left)

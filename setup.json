@@ -1,423 +1,292 @@
 {
-      "Heroes": {
-            "Cid, the Helpful Adventurer": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 7,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Treebeast": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Ivan, the Drunken Brawler": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 6,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Brittany, Beach Princess": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "The Wandering Fisherman": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Betty Clicker": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "The Masked Samurai": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Leon": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "The Great Forest Seer": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Alexa, Assassin": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Natalia, Ice Apprentice": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Mercedes, Duchess of Blades": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Bobby, Bounty Hunter": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Broyle Lindeoven, Fire Mage": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Sir George II, King's Guard": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "King Midas": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 6,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Referi Jerator, Ice Wizard": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": true
-            },
-            "Abaddon": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Ma Zhu": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Amenhotep": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 3,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Beastlord": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Athena, Goddess of War": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": true
-            },
-            "Aphrodite, Goddess of Love": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": true
-            },
-            "Shinatobe, Wind Deity": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 5,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Grant, The General": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            },
-            "Frostleaf": {
-                  "Level": 0,
-                  "Level ceiling": 1,
-                  "Skill level": 0,
-                  "Max skill level": 4,
-                  "Gilded": false,
-                  "Unique skills": false
-            }
-      },
-      "Unique skills": {
-            "Referi Jerator, Ice Wizard": [
-                  10,
-                  25,
-                  50,
-                  75,
-                  125,
-                  150
-            ],
-            "Athena, Goddess of War": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Dread Knight": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Aphrodite, Goddess of Love": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Atlas": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Terra": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Phthalo": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Orntchya Gladeye, Didensy Banana": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Lilin": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Cadmia": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Alabaster": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Astraea": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Chiron": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Moloch": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Bomber Max": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ],
-            "Gog": [
-                  10,
-                  25,
-                  50,
-                  100,
-                  125,
-                  150
-            ]
-      },
-      "Powers": {
-            "Clickstorm": {
-                  "Cooldown": 10,
-                  "Key": 0,
-                  "Unlocked": false,
-                  "Unlock hero": "Cid, the Helpful Adventurer",
-                  "Unlock level": 25,
-                  "Unlock ability": 2
-            },
-            "Powersurge": {
-                  "Cooldown": 10,
-                  "Key": 1,
-                  "Unlocked": false,
-                  "Unlock hero": "Ivan, the Drunken Brawler",
-                  "Unlock level": 75,
-                  "Unlock ability": 4
-            },
-            "Lucky Strikes": {
-                  "Cooldown": 30,
-                  "Key": 2,
-                  "Unlocked": false,
-                  "Unlock hero": "Alexa, Assassin",
-                  "Unlock level": 100,
-                  "Unlock ability": 5
-            },
-            "Metal Detector": {
-                  "Cooldown": 30,
-                  "Key": 3,
-                  "Unlocked": false,
-                  "Unlock hero": "Broyle Lindeoven, Fire Mage",
-                  "Unlock level": 100,
-                  "Unlock ability": 5
-            },
-            "Golden Clicks": {
-                  "Cooldown": 60,
-                  "Key": 4,
-                  "Unlocked": false,
-                  "Unlock hero": "King Midas",
-                  "Unlock level": 100,
-                  "Unlock ability": 5
-            },
-            "The Dark Ritual": {
-                  "Cooldown": 480,
-                  "Key": 5,
-                  "Unlocked": false,
-                  "Unlock hero": "Abaddon",
-                  "Unlock level": 75,
-                  "Unlock ability": 4
-            },
-            "Super Clicks": {
-                  "Cooldown": 60,
-                  "Key": 6,
-                  "Unlocked": false,
-                  "Unlock hero": "Beastlord",
-                  "Unlock level": 100,
-                  "Unlock ability": 5
-            },
-            "Energize": {
-                  "Cooldown": 60,
-                  "Key": 7,
-                  "Unlocked": false,
-                  "Unlock hero": "Aphrodite, Goddess of Love",
-                  "Unlock level": 100,
-                  "Unlock ability": 4
-            },
-            "Reload": {
-                  "Cooldown": 60,
-                  "Key": 8,
-                  "Unlocked": false,
-                  "Unlock hero": "Shinatobe, Wind Deity",
-                  "Unlock level": 100,
-                  "Unlock ability": 5
-            }
-      },
-      "Gamestate": {
+    "Heroes": {
+        "Cid, the Helpful Adventurer": {
             "Level": 0,
-            "Ascension level": 0,
-            "Transcend level": 0,
-            "Current hero": "Cid, the Helpful Adventurer",
-            "Unlocked powers": []
-      }
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 7,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Treebeast": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Ivan, the Drunken Brawler": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 6,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Brittany, Beach Princess": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "The Wandering Fisherman": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Betty Clicker": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "The Masked Samurai": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Leon": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "The Great Forest Seer": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Alexa, Assassin": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Natalia, Ice Apprentice": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Mercedes, Duchess of Blades": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Bobby, Bounty Hunter": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Broyle Lindeoven, Fire Mage": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Sir George II, King's Guard": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "King Midas": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 6,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Referi Jerator, Ice Wizard": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Abaddon": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Ma Zhu": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Amenhotep": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 3,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Beastlord": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Athena, Goddess of War": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Aphrodite, Goddess of Love": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Shinatobe, Wind Deity": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 5,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Grant, The General": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        },
+        "Frostleaf": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": false
+        }
+    },
+    "Powers": {
+        "Clickstorm": {
+            "Cooldown": 10,
+            "Key": 0,
+            "Unlocked": false,
+            "Unlock hero": "Cid, the Helpful Adventurer",
+            "Unlock level": 25,
+            "Unlock skill": 2
+        },
+        "Powersurge": {
+            "Cooldown": 10,
+            "Key": 1,
+            "Unlocked": false,
+            "Unlock hero": "Ivan, the Drunken Brawler",
+            "Unlock level": 75,
+            "Unlock skill": 4
+        },
+        "Lucky Strikes": {
+            "Cooldown": 30,
+            "Key": 2,
+            "Unlocked": false,
+            "Unlock hero": "Alexa, Assassin",
+            "Unlock level": 100,
+            "Unlock skill": 5
+        },
+        "Metal Detector": {
+            "Cooldown": 30,
+            "Key": 3,
+            "Unlocked": false,
+            "Unlock hero": "Broyle Lindeoven, Fire Mage",
+            "Unlock level": 100,
+            "Unlock skill": 5
+        },
+        "Golden Clicks": {
+            "Cooldown": 60,
+            "Key": 4,
+            "Unlocked": false,
+            "Unlock hero": "King Midas",
+            "Unlock level": 100,
+            "Unlock skill": 5
+        },
+        "The Dark Ritual": {
+            "Cooldown": 480,
+            "Key": 5,
+            "Unlocked": false,
+            "Unlock hero": "Abaddon",
+            "Unlock level": 75,
+            "Unlock skill": 4
+        },
+        "Super Clicks": {
+            "Cooldown": 60,
+            "Key": 6,
+            "Unlocked": false,
+            "Unlock hero": "Beastlord",
+            "Unlock level": 100,
+            "Unlock skill": 5
+        },
+        "Energize": {
+            "Cooldown": 60,
+            "Key": 7,
+            "Unlocked": false,
+            "Unlock hero": "Aphrodite, Goddess of Love",
+            "Unlock level": 100,
+            "Unlock skill": 4
+        },
+        "Reload": {
+            "Cooldown": 60,
+            "Key": 8,
+            "Unlocked": false,
+            "Unlock hero": "Shinatobe, Wind Deity",
+            "Unlock level": 100,
+            "Unlock skill": 5
+        }
+    },
+    "Gamestate": {
+        "Level": 1,
+        "Ascension level": 0,
+        "Transcend level": 0,
+        "Current hero": "Cid, the Helpful Adventurer"
+    }
 }

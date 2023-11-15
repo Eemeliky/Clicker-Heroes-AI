@@ -1,5 +1,5 @@
 import json
-from config import SKILL_UNLOCKS, SAVE_PATH
+from config import SAVE_PATH
 
 
 def load_from_file():
@@ -7,15 +7,14 @@ def load_from_file():
     Loads the gamestate from save.json or creates one from setup.json
     :return:
     """
-    h_data, g_data, p_data = ([] for _ in range(3))
+    h_dict, g_dict, p_dict = ([] for _ in range(3))
     save_file = False
     try:
         with open(SAVE_PATH + "save.json", 'r', encoding='utf-8') as file:
             data = json.load(file)
-            h_data = data["Heroes"]
-            SKILL_UNLOCKS["Unique"] = data["Unique skills"]
-            p_data = data["Powers"]
-            g_data = data["Gamestate"]
+            h_dict = data["Heroes"]
+            p_dict = data["Powers"]
+            g_dict = data["Gamestate"]
             save_file = True
     except IOError:
         pass
@@ -24,16 +23,15 @@ def load_from_file():
         try:
             with open("setup.json", 'r', encoding='utf-8') as file:
                 data = json.load(file)
-                h_data = data["Heroes"]
-                SKILL_UNLOCKS["Unique"] = data["Unique skills"]
-                p_data = data["Powers"]
-                g_data = data["Gamestate"]
+                h_dict = data["Heroes"]
+                p_dict = data["Powers"]
+                g_dict = data["Gamestate"]
         except IOError:
             print("'setup.json' NOT FOUND!")
-            return h_data, g_data, p_data
+            return h_dict, g_dict, p_dict
 
-    return h_data, g_data, p_data
+    return h_dict, g_dict, p_dict
 
 
-def save_data(game):
+def save_data(game):  # Not implemented yet
     pass
