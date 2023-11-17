@@ -2,7 +2,7 @@ import pyautogui
 import config
 import tkinter as tk
 from time import time
-from pynput.mouse import Controller, Button
+import pynput
 
 
 class ControlWindow(object):
@@ -40,7 +40,7 @@ class ControlWindow(object):
         self.running = False
         self.root.destroy()
 
-    def mainloop(self):
+    def run(self):
         self.root.mainloop()
 
     def change_position(self):
@@ -87,8 +87,11 @@ class Hero(object):
     def raise_level_ceiling(self):
         print(self.name, "lvl", self.level)
         if self.level_ceiling < max(config.LEVEL_GUIDE):
-            idx = config.LEVEL_GUIDE.index(self.level_ceiling) + 1
-            self.level_ceiling = config.LEVEL_GUIDE[idx]
+            if self.level_ceiling not in config.LEVEL_GUIDE:
+                self.level_ceiling = config.LEVEL_GUIDE[0]
+            else:
+                idx = config.LEVEL_GUIDE.index(self.level_ceiling) + 1
+                self.level_ceiling = config.LEVEL_GUIDE[idx]
         else:
             self.level_ceiling += 25
 
@@ -144,7 +147,7 @@ class GameData:
     def create_control_win(self):
         self.control_window = ControlWindow()
 
-    def change_hero(self):
+    def next_hero(self):
         self.hero_index += 1
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
@@ -176,8 +179,8 @@ def click_on_point(x, y, _return=True):
 
 def get_pixel_val(img):
     """
-    :param img: Image
-    :return: pixel value that the cursor points to
+    :param img: Image array
+    :return: Pixel value that the cursor points to
     """
     x, y = pyautogui.position()
     return img[y, x, :]
@@ -231,8 +234,8 @@ def auto_click():
     """
     *3x ClICKS* on the autoclicker point
     """
-    mouse = Controller()
+    mouse = pynput.mouse.Controller()
     if cursor_ready:
-        mouse.click(Button.left)
-        mouse.click(Button.left)
-        mouse.click(Button.left)
+        mouse.click(pynput.mouse.Button.left)
+        mouse.click(pynput.mouse.Button.left)
+        mouse.click(pynput.mouse.Button.left)
