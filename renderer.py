@@ -25,17 +25,21 @@ def move_game_win(hwnd):
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
-def get_screenshot():
+def get_screenshot(BGR=False):
     """
     Takes screenshot from the game window
-    :return: screenshot of the game as a numpy array (BGR)
+    :param BGR: boolean, returns the screenshot as BRG
+    :return: screenshot of the game as a numpy array (RGB)
     """
     hwnd = win32gui.FindWindow(None, GAME_NAME)
     left, top, right, bot = win32gui.GetWindowRect(hwnd)
     bbox = [left, top, right, bot]
     img = array(ImageGrab.grab(bbox))  # noqa
-    screenshot = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    return screenshot
+    if BGR:
+        img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        return img_bgr
+    else:
+        return img
 
 
 def render(img):

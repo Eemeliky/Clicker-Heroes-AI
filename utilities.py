@@ -3,6 +3,8 @@ import config
 import tkinter as tk
 from time import time
 import pynput
+import numpy as np
+import renderer as rnd
 
 
 class ControlWindow(object):
@@ -152,6 +154,34 @@ class GameData:
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
         self.hero = [self.hero_index]
+
+    def change_level(self):
+        img = rnd.get_screenshot()
+        if self.level % 5 == 0:
+            if not self.boss_timer:
+                self.boss_timer = time()
+            elif (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
+                print("BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
+                self.move_up_level()
+            elif (time() - self.boss_timer) > 30:
+                self.level -= 1
+                self.boss_timer = 0
+                self.grind_timer = time()
+                click_on_point(728, 82)
+                print(f"GRINDING TIME! ({config.GRIND_TIME}s)")
+        elif self.grind_timer:
+            if (time() - self.grind_timer) > config.GRIND_TIME:
+                self.grind_timer = 0
+                self.move_up_level()
+                print("GRIND ENDED!")
+        else:
+            if (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
+                self.move_up_level()
+
+    def move_up_level(self):
+        self.level += 1
+        click_on_point(813, 85)
+        print("Game level: {}".format(self.level))
 
 
 def cursor_ready():
