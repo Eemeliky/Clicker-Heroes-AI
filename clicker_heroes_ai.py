@@ -1,6 +1,8 @@
 import cv2
+
+import core
 import file_handler as fh
-import renderer
+import renderer as rnd
 import utilities as util
 import detectors as dts
 from pynput import keyboard
@@ -15,6 +17,7 @@ def on_release(key):
     global logic_running
     if key == keyboard.Key.space:
         logic_running ^= True
+        print("Logic:", logic_running)
 
 
 def game_loop(game):
@@ -23,18 +26,22 @@ def game_loop(game):
     while game.control_window.running:
         game.control_window.root.update()
         if logic_running:
-            dts.detect_hero(game)
+            game.change_level()
+            if dts.detect_hero(game):
+                core.hero_level_up_logic(game)
+            else:
+                util.scroll_down(game)
         else:
-            img = renderer.get_screenshot()
-            renderer.render(img)
+            img = rnd.get_screenshot()
+            rnd.render(img)
 
 
 def setup():
     heroes, game_data, powers = fh.load_from_file()
     game = util.create_game_data(heroes, game_data, powers)
-    hwnd = renderer.find_game_win()
+    hwnd = rnd.find_game_win()
     if heroes and hwnd:
-        renderer.move_game_win(hwnd)
+        rnd.move_game_win(hwnd)
         time.sleep(1)
         game.create_control_win()
         game_thread = Thread(target=game_loop, args=(game, ))

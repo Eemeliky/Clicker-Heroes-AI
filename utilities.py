@@ -1,7 +1,7 @@
 import pyautogui
 import config
 import tkinter as tk
-from time import time
+from time import time, sleep
 import pynput
 import numpy as np
 import renderer as rnd
@@ -62,6 +62,7 @@ class Hero(object):
         self.level_ceiling = level_ceiling  # Target level for upgrading the hero
         self.gilded = gilded
         self.unique_ups = unique_ups
+        self.level_up_button = (-1, -1)
 
     def level_up(self):
         self.level += 1
@@ -80,10 +81,10 @@ class Hero(object):
     def skill_unlocked(self):
         if self.skill_level < self.max_skill_level:
             if self.name in config.SKILL_UNLOCKS["Unique"]:
-                level_req = config.SKILL_UNLOCKS[self.name][self.skill_level]
+                level_req = config.SKILL_UNLOCKS["Unique"][self.name][self.skill_level]
                 return self.level >= level_req
             else:
-                level_req = config.SKILL_UNLOCKS[self.skill_level]
+                level_req = config.SKILL_UNLOCKS["Normal"][self.skill_level]
                 return self.level >= level_req
 
     def raise_level_ceiling(self):
@@ -95,7 +96,7 @@ class Hero(object):
                 idx = config.LEVEL_GUIDE.index(self.level_ceiling) + 1
                 self.level_ceiling = config.LEVEL_GUIDE[idx]
         else:
-            self.level_ceiling += 25
+            self.level_ceiling += config.LEVEL_OVER_STEP
 
 
 class Power(object):
@@ -143,17 +144,19 @@ class GameData:
         self.last_power = ""
         self.boss_timer = 0
         self.grind_timer = 0
-        self.hero_name_xy = (0, 0)
-        self.scroll_bar = config.SCROLL_POSITIONS[0]
 
     def create_control_win(self):
         self.control_window = ControlWindow()
+
+    def reset_hero_queue(self):
+        self.hero_index = 0
+        self.hero = self.heroes[self.hero_index]
 
     def next_hero(self):
         self.hero_index += 1
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
-        self.hero = [self.hero_index]
+        self.hero = self.heroes[self.hero_index]
 
     def change_level(self):
         img = rnd.get_screenshot()
@@ -182,6 +185,16 @@ class GameData:
         self.level += 1
         click_on_point(813, 85)
         print("Game level: {}".format(self.level))
+
+    def ascend(self):  # Add heroes reset!
+        self.level = 1
+        self.ascensions += 1
+        self.boss_timer = 0
+        self.grind_timer = 0
+        click_on_point(1000, 245, False)
+        sleep(1/5)
+        click_on_point(460, 450, False)
+        sleep(1/5)
 
 
 def cursor_ready():
@@ -258,6 +271,29 @@ def create_game_data(h_data, g_data, p_data):
                     g_data["Transcend level"]
                     )
     return game
+
+
+def scroll_down(game):
+    """
+    Scrolls down on the heroes list in the game window
+    :param game: GameData class object
+    """
+    img = rnd.get_screenshot()
+    if img[565, 501, 2] == 255:
+        game.next_hero()
+        reset_scroll()
+    else:
+        pyautogui.scroll(-150)
+
+
+def reset_scroll():
+    """
+    Returns to the top of the heroes list in the game window
+    """
+    img = rnd.get_screenshot()
+    while not img[210, 513, 2] == 255:
+        pyautogui.scroll(1500)
+        img = rnd.get_screenshot()
 
 
 def auto_click():

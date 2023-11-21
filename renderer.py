@@ -34,12 +34,12 @@ def get_screenshot(BGR=False):
     hwnd = win32gui.FindWindow(None, GAME_NAME)
     left, top, right, bot = win32gui.GetWindowRect(hwnd)
     bbox = [left, top, right, bot]
-    img = array(ImageGrab.grab(bbox))  # noqa
+    img_rgb = array(ImageGrab.grab(bbox))  # noqa
     if BGR:
-        img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
         return img_bgr
     else:
-        return img
+        return img_rgb
 
 
 def render(img):
@@ -47,7 +47,8 @@ def render(img):
     Resizes the image and renders it in a Render window next to the game window.
     :param img: Image to render as a numpy array (BGR)
     """
-    small = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    small = cv2.resize(img_rgb, (0, 0), fx=0.5, fy=0.5)
     cv2.imshow("Render", small)
     hwnd = win32gui.FindWindow(None, 'Render')
     win32gui.MoveWindow(hwnd, WINDOW_WIDTH, 0, round((WINDOW_WIDTH + 35) / 2), round((WINDOW_HEIGHT + 80) / 2),
