@@ -12,13 +12,9 @@ def upgrade_first_levels(game):
     """
     hero = game.hero
     img = rnd.get_screenshot()
-
-    if (hero.level == 3) & hero.level_ceiling == (cf.LEVEL_GUIDE[0]):
+    if hero.name == 'Cid, the Helpful Adventurer' and img[235, cf.LEVEL_UP_X, 2] == 255:
+        hero.name_pos = (0, 235)
         hero.level_up()
-    elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level < 3):
-        if img[235, cf.LEVEL_UP_X, 2] == 255:
-            util.click_on_point(cf.LEVEL_UP_X, 235)
-            hero.level_up()
 
 
 def improve_hero(game):
@@ -36,14 +32,12 @@ def improve_hero(game):
             y = y + 45  # 45px is offset from the top of the hero name to the upgrade button
             pixel_val = [img[y, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
             if min(pixel_val) > 50:
-                util.click_on_point(cf.SKILL_X_COORDINATE + (cf.SKILL_OFFSET * hero.skill_level), y)
                 hero.level_skill()
         elif img[y, cf.LEVEL_UP_X, 2] > 200:
-            util.click_on_point(cf.LEVEL_UP_X, game.hero_y)
             hero.level_up()
 
 
-def hero_level_up_logic(game):
+def hero_leveling_logic(game):
     """
     Decides what action to do with the current hero
     :param game: GameData class object
@@ -65,7 +59,9 @@ def hero_level_up_logic(game):
             improve_hero(game)
 
             if lvl_clg != hero.level_ceiling:
-                if game.hero_index > 24 and hero.level < 425:
+                if lvl_clg == cf.LEVEL_GUIDE[0]:
+                    game.reset_hero_queue()
+                elif game.hero_index > 24 and hero.level < 425:
                     # after 'Frostleaf' the price for new hero raises considerably
                     # -> that we have to wait for current best hero to be lvl +400 to buy new hero
                     game.reset_hero_queue()
@@ -73,7 +69,7 @@ def hero_level_up_logic(game):
                     game.next_hero()
 
 
-# TODO: ALL FUNCTIONS UNDER
+# TODO: REWRITE ALL FUNCTIONS UNDER
 def power_unlocker(game, hero, powers):
     if game.unlocked_powers >= (len(powers) - 1):
         return

@@ -62,14 +62,18 @@ class Hero(object):
         self.level_ceiling = level_ceiling  # Target level for upgrading the hero
         self.gilded = gilded
         self.unique_ups = unique_ups
-        self.level_up_button = (-1, -1)
+        self.name_pos = (-1, -1)
 
     def level_up(self):
+        x, y = self.name_pos
+        click_on_point(config.LEVEL_UP_X, y + 45)
         self.level += 1
         if self.level in config.LEVEL_GUIDE:
             self.raise_level_ceiling()
 
     def level_skill(self):
+        x, y = self.name_pos
+        click_on_point(config.SKILL_X_COORDINATE + (config.SKILL_OFFSET * self.skill_level), y + 45)
         self.skill_level += 1
         print(self.name, "Skill", self.skill_level, "Purchased")
 
