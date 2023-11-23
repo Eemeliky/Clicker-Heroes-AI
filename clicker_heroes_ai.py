@@ -1,5 +1,7 @@
 import cv2
+import pyautogui
 
+import config
 import core
 import file_handler as fh
 import renderer as rnd
@@ -28,9 +30,10 @@ def game_loop(game):
         if logic_running:
             game.change_level()
             if dts.detect_hero(game):
-                core.hero_level_up_logic(game)
+                core.hero_leveling_logic(game)
             else:
                 util.scroll_down(game)
+            util.auto_click()
         else:
             img = rnd.get_screenshot()
             rnd.render(img)

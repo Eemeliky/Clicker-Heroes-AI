@@ -12,8 +12,8 @@ def upgrade_first_levels(game):
     """
     hero = game.hero
     img = rnd.get_screenshot()
-    if hero.name == 'Cid, the Helpful Adventurer' and img[235, cf.LEVEL_UP_X, 2] == 255:
-        hero.name_pos = (0, 235)
+    if img[235, cf.LEVEL_UP_X, 2] > 250:
+        hero.name_pos = (149, 190)
         hero.level_up()
 
 
@@ -22,16 +22,16 @@ def improve_hero(game):
     Levels up hero if it's available or buys new skill if it's unlocked
     :param game: GameData class object
     """
-    if game.level < 5:
+    if game.level < 3:
         upgrade_first_levels(game)
     else:
         hero = game.hero
         img = rnd.get_screenshot()
-        x, y = game.hero_name_xy
+        x, y = hero.name_pos
+        y = y + 45  # 45px is offset from the top of the hero name to the upgrade button
         if hero.skill_unlocked():
-            y = y + 45  # 45px is offset from the top of the hero name to the upgrade button
             pixel_val = [img[y, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
-            if min(pixel_val) > 50:
+            if max(pixel_val) > 50:
                 hero.level_skill()
         elif img[y, cf.LEVEL_UP_X, 2] > 200:
             hero.level_up()
