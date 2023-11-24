@@ -50,7 +50,7 @@ def hero_leveling_logic(game):
             while hero.level > hero.level_ceiling:
                 hero.raise_level_ceiling()
 
-        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level > 99):
+        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
             # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due low increases to he's dps
             game.next_hero()
 

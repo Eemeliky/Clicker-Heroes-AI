@@ -31,7 +31,7 @@ def detect_hero(game):
         starting_point = (int(x), int(y))
         ending_point = (int(x + width), int(y + height))
         cv2.rectangle(img, starting_point, ending_point, color=(255, 0, 0), thickness=2)
-        game.hero_name_xy = (x, y)
+        hero.name_pos = (x, y)
         render(img)
         return True
 

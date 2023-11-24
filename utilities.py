@@ -68,10 +68,17 @@ class Hero(object):
         x, y = self.name_pos
         click_on_point(config.LEVEL_UP_X, y + 45)
         self.level += 1
-        if self.level in config.LEVEL_GUIDE:
-            self.raise_level_ceiling()
+        if self.level == self.level_ceiling:
+            if self.unique_ups:
+                if self.level_ceiling not in config.SKILL_UNLOCKS["Unique"][self.name]:
+                    self.raise_level_ceiling()
+            else:
+                if self.level_ceiling not in config.SKILL_UNLOCKS["Normal"]:
+                    self.raise_level_ceiling()
 
     def level_skill(self):
+        if self.level == self.level_ceiling:
+            self.raise_level_ceiling()
         x, y = self.name_pos
         click_on_point(config.SKILL_X_COORDINATE + (config.SKILL_OFFSET * self.skill_level), y + 45)
         self.skill_level += 1
@@ -84,7 +91,7 @@ class Hero(object):
 
     def skill_unlocked(self):
         if self.skill_level < self.max_skill_level:
-            if self.name in config.SKILL_UNLOCKS["Unique"]:
+            if self.unique_ups:
                 level_req = config.SKILL_UNLOCKS["Unique"][self.name][self.skill_level]
                 return self.level >= level_req and self.skill_level < self.max_skill_level
             else:
@@ -92,7 +99,6 @@ class Hero(object):
                 return self.level >= level_req and self.skill_level < self.max_skill_level
 
     def raise_level_ceiling(self):
-        print(self.name, "lvl", self.level)
         if self.level_ceiling < max(config.LEVEL_GUIDE):
             if self.level_ceiling not in config.LEVEL_GUIDE:
                 self.level_ceiling = config.LEVEL_GUIDE[0]
@@ -157,6 +163,7 @@ class GameData:
         self.hero = self.heroes[self.hero_index]
 
     def next_hero(self):
+        print(self.hero.name, "lvl", self.hero.level)
         self.hero_index += 1
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
@@ -189,7 +196,10 @@ class GameData:
     def move_up_level(self):
         self.level += 1
         click_on_point(813, 85)
-        print("Game level: {}".format(self.level))
+        if self.level % 5 == 0:
+            print("Game level: {} (BOSS)".format(self.level))
+        else:
+            print("Game level: {}".format(self.level))
 
     def ascend(self):  # Add heroes reset!
         self.level = 1
@@ -272,12 +282,14 @@ def scroll_down(game):
     Scrolls down on the heroes list in the game window
     :param game: GameData class object
     """
-    img = rnd.get_screenshot()
-    if img[565, 501, 2] == 255:
-        game.next_hero()
-        reset_scroll()
-    else:
-        pyautogui.scroll(-150)
+    if not game.boss_timer:
+        img = rnd.get_screenshot()
+        if img[565, 501, 2] == 255:
+            game.reset_hero_queue()
+            reset_scroll()
+        else:
+            pyautogui.scroll(-150)
+            sleep(1/5)
 
 
 def reset_scroll():
@@ -285,7 +297,7 @@ def reset_scroll():
     Returns to the top of the heroes list in the game window
     """
     img = rnd.get_screenshot()
-    while not img[210, 513, 2] == 255:
+    while not img[210, 513, 2] > 250:
         pyautogui.scroll(1500)
         img = rnd.get_screenshot()
     sleep(1/2)
