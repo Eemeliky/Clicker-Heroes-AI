@@ -28,11 +28,12 @@ def game_loop(game):
     while game.control_window.running:
         game.control_window.root.update()
         if logic_running:
-            game.change_level()
+            game.check_level()
             if dts.detect_hero(game):
                 core.hero_leveling_logic(game)
             else:
                 util.scroll_down(game)
+            core.power_use_logic(game)
             util.auto_click()
         else:
             img = rnd.get_screenshot()

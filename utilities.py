@@ -82,7 +82,7 @@ class Hero(object):
         x, y = self.name_pos
         click_on_point(config.SKILL_X_COORDINATE + (config.SKILL_OFFSET * self.skill_level), y + 45)
         self.skill_level += 1
-        print(self.name, "Skill", self.skill_level, "Purchased")
+        print(f"{self.name} Skill level: {self.skill_level}/{self.max_skill_level}")
 
     def reset(self):
         self.level = 0
@@ -114,14 +114,13 @@ class Power(object):
     Class for Powers and their attribute
     """
 
-    def __init__(self, name, cooldown, key, state, hero, level, skill):
+    def __init__(self, name, cooldown, key, state, hero, skill):
         self.name = name
         self.unlocked = state
         self.cooldown = cooldown
-        self.cd_timer = cooldown + 1
+        self.cd_timer = 0
         self.key = key
         self.hero = hero
-        self.level = level
         self.skill = skill
 
     def unlock(self):
@@ -131,10 +130,17 @@ class Power(object):
     def activate(self):
         pyautogui.press(self.key)
         self.cd_timer = time()
+        print(self.name, "Active")
 
     def reset(self):
         self.unlocked = False
         self.cd_timer = 0
+
+    def on_cooldown(self):
+        if (time() - self.cd_timer) > self.cooldown:
+            return False
+
+        return True
 
 
 class GameData:
@@ -147,11 +153,11 @@ class GameData:
         self.hero_index = h_idx
         self.hero = self.heroes[self.hero_index]
         self.powers = powers
+        self.unlocked_powers = 0
         self.level = level
         self.control_window = None
         self.ascensions = ascension
         self.transcends = transcend
-        self.last_power = ""
         self.boss_timer = 0
         self.grind_timer = 0
 
@@ -169,7 +175,7 @@ class GameData:
             self.hero_index = 0
         self.hero = self.heroes[self.hero_index]
 
-    def change_level(self):
+    def check_level(self):
         img = rnd.get_screenshot()
         if self.level % 5 == 0:
             if not self.boss_timer:
@@ -262,8 +268,7 @@ def create_game_data(h_data, g_data, p_data):
                           p_data[name]["Key"],
                           p_data[name]["Unlocked"],
                           p_data[name]["Unlock hero"],
-                          p_data[name]["Unlock level"],
-                          p_data[name]["Unlock skill"]
+                          p_data[name]["Unlock skill"],
                           )
         p_tmp.append(new_power)
 
@@ -288,7 +293,7 @@ def scroll_down(game):
             game.reset_hero_queue()
             reset_scroll()
         else:
-            pyautogui.scroll(-150)
+            pyautogui.scroll(-250)
             sleep(1/5)
 
 

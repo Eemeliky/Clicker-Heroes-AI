@@ -50,7 +50,7 @@ def hero_leveling_logic(game):
             while hero.level > hero.level_ceiling:
                 hero.raise_level_ceiling()
 
-        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
+        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 110):
             # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due low increases to he's dps
             game.next_hero()
 
@@ -69,27 +69,62 @@ def hero_leveling_logic(game):
                     game.next_hero()
 
 
+def loop_basic_powers(game):
+    if game.unlocked_powers < 7:
+        for idx in range(game.unlocked_powers):
+            power = game.powers[idx]
+            if not power.on_cooldown():
+                power.activate()
+    else:
+        for idx in range(7):
+            power = game.powers[idx]
+            if not power.on_cooldown():
+                power.activate()
+
+
+def power_use_logic(game):
+    if not game.boss_timer and game.unlocked_powers < len(game.powers):
+        power_unlocker(game)
+    elif game.boss_timer:
+        if 0 < game.unlocked_powers < 8:
+            loop_basic_powers(game)
+        elif game.unlocked_powers == 8:
+            energize = game.powers[7]
+            lucky_strike = game.powers[2]
+            if not energize.on_cooldown() and not lucky_strike.on_cooldown():
+                energize.activate()
+                lucky_strike.activate()
+            else:
+                loop_basic_powers(game)
+        elif game.unlocked_powers == len(game.powers):
+            energize = game.powers[7]
+            reload = game.powers[8]
+            if not energize.on_cooldown() and not reload.on_cooldown():
+                lucky_strike = game.powers[2]
+                golden_clicks = game.powers[4]
+                if not lucky_strike.on_cooldown() and not golden_clicks.on_cooldown():
+                    lucky_strike.activate()
+                    golden_clicks.activate()
+                    energize.activate()
+                    reload.activate()
+                    lucky_strike.activate()
+                    golden_clicks.activate()
+            else:
+                loop_basic_powers(game)
+
+
+def power_unlocker(game):
+    for power in game.powers:
+        if not power.unlocked:
+            for hero in game.heroes:
+                if hero.level < 25:
+                    break
+                elif power.hero == hero.name and power.skill <= hero.skill_level:
+                    power.unlock()
+                    game.unlocked_powers += 1
+
+
 # TODO: REWRITE ALL FUNCTIONS UNDER
-def power_unlocker(game, hero, powers):
-    if game.unlocked_powers >= (len(powers) - 1):
-        return
-    if hero.name in POWER_UNLOCK:
-        if (hero.level == POWER_UNLOCK[hero.name][0]) & (hero.skill_level == POWER_UNLOCK[hero.name][1]):
-            power = powers[POWER_UNLOCK[hero.name][2]]
-            if not power.unlocked:
-                power.unlock()
-                game.unlock_power()
-
-
-def power_usage(game, powers):
-    if game.unlocked_powers > 0:
-        if not game.grind_mode:
-            for power in powers:
-                if power.unlocked:
-                    if (time.time() - power.cd_timer) > power.cooldown:
-                        power.activate()
-
-
 def ascend_logic(game, heroes, powers):
     if game.asc_available:
         if (game.level > 1000) & (game.ascensions < 1):
