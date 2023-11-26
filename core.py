@@ -70,6 +70,10 @@ def hero_leveling_logic(game):
 
 
 def loop_basic_powers(game):
+    """
+    Loops through 1-7 powers excluding (Energize and Reload). Activates if power is ready.
+    :param game: GameData class object
+    """
     if game.unlocked_powers < 7:
         for idx in range(game.unlocked_powers):
             power = game.powers[idx]
@@ -83,6 +87,10 @@ def loop_basic_powers(game):
 
 
 def power_use_logic(game):
+    """
+    Decides what to do with powers, unlocks them if possible and uses them in correct order in boss zones.
+    :param game: GameData class object
+    """
     if not game.boss_timer and game.unlocked_powers < len(game.powers):
         power_unlocker(game)
     elif game.boss_timer:
@@ -114,6 +122,10 @@ def power_use_logic(game):
 
 
 def power_unlocker(game):
+    """
+    Unlocks the powers
+    :param game: GameData class object
+    """
     for power in game.powers:
         if not power.unlocked:
             for hero in game.heroes:
@@ -122,22 +134,3 @@ def power_unlocker(game):
                 elif power.hero == hero.name and power.skill <= hero.skill_level:
                     power.unlock()
                     game.unlocked_powers += 1
-
-
-# TODO: REWRITE ALL FUNCTIONS UNDER
-def ascend_logic(game, heroes, powers):
-    if game.asc_available:
-        if (game.level > 1000) & (game.ascensions < 1):
-            print("ASCEND AT", game.level)
-            print()
-            print()
-            game.ascend()
-            for hero in heroes:
-                hero.reset()
-            for power in powers:
-                power.reset()
-            pyautogui.moveTo(cf.AC_POINT)
-
-
-
-

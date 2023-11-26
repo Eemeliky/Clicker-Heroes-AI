@@ -88,6 +88,7 @@ class Hero(object):
         self.level = 0
         self.skill_level = 0
         self.level_ceiling = 1
+        self.name_pos = (-1, -1)
 
     def skill_unlocked(self):
         if self.skill_level < self.max_skill_level:
@@ -191,10 +192,16 @@ class GameData:
                 click_on_point(728, 82)
                 print(f"GRINDING TIME! ({config.GRIND_TIME}s)")
         elif self.grind_timer:
+            amenhotep = self.heroes[18]
             if (time() - self.grind_timer) > config.GRIND_TIME:
                 self.grind_timer = 0
                 self.move_up_level()
                 print("GRIND ENDED!")
+            elif self.level > 130 and amenhotep.level > 150:
+                print("ASCENSION", self.level)
+                print()
+                print()
+                self.ascend()
         else:
             if (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
                 self.move_up_level()
@@ -207,14 +214,18 @@ class GameData:
         else:
             print("Game level: {}".format(self.level))
 
-    def ascend(self):  # Add heroes reset!
+    def ascend(self):
+        for hero in self.heroes:
+            hero.reset()
+        for power in self.powers:
+            power.reset()
         self.level = 1
         self.ascensions += 1
         self.boss_timer = 0
         self.grind_timer = 0
         click_on_point(1000, 245, False)
         sleep(1/5)
-        click_on_point(460, 450, False)
+        click_on_point(460, 450)
         sleep(1/5)
 
 
