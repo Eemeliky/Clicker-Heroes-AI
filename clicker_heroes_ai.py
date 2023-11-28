@@ -1,9 +1,7 @@
 import cv2
-import pyautogui
-
-import config
 import core
 import file_handler as fh
+import renderer
 import renderer as rnd
 import utilities as util
 import detectors as dts
@@ -27,17 +25,24 @@ def game_loop(game):
     global logic_running
     while game.control_window.running:
         game.control_window.root.update()
-        if logic_running:
-            game.check_level()
-            if dts.detect_hero(game):
-                core.hero_leveling_logic(game)
-            else:
-                util.scroll_down(game)
-            core.power_use_logic(game)
-            util.auto_click()
+        if not rnd.find_game_win():
+            break
         else:
-            img = rnd.get_screenshot()
-            rnd.render(img)
+            if logic_running:
+                game.check_level()
+                if dts.detect_hero(game):
+                    core.hero_leveling_logic(game)
+                else:
+                    util.scroll_down(game)
+                core.power_use_logic(game)
+                util.auto_click()
+            else:
+                img = rnd.get_screenshot()
+                rnd.render(img)
+
+    fh.save_data(game)
+    if game.control_window.running:
+        game.control_window.stop()
 
 
 def setup():

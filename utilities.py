@@ -149,12 +149,12 @@ class GameData:
     Class for game variables
     """
 
-    def __init__(self, level, heroes, h_idx, powers, ascension, transcend):
+    def __init__(self, level, heroes, h_idx, powers, powers_num, ascension, transcend):
         self.heroes = heroes
         self.hero_index = h_idx
         self.hero = self.heroes[self.hero_index]
         self.powers = powers
-        self.unlocked_powers = 0
+        self.unlocked_powers = powers_num
         self.level = level
         self.control_window = None
         self.ascensions = ascension
@@ -219,6 +219,7 @@ class GameData:
             hero.reset()
         for power in self.powers:
             power.reset()
+        self.reset_hero_queue()
         self.level = 1
         self.ascensions += 1
         self.boss_timer = 0
@@ -260,6 +261,7 @@ def create_game_data(h_data, g_data, p_data):
     h_tmp = []
     p_tmp = []
     h_idx = 0
+    powers_num = 0
     for name in h_data:
         new_hero = Hero(name,
                         h_data[name]["Level"],
@@ -281,14 +283,17 @@ def create_game_data(h_data, g_data, p_data):
                           p_data[name]["Unlock hero"],
                           p_data[name]["Unlock skill"],
                           )
+        if new_power.unlocked:
+            powers_num += 1
         p_tmp.append(new_power)
 
     game = GameData(g_data["Level"],
                     h_tmp,
                     h_idx,
                     p_tmp,
+                    powers_num,
                     g_data["Ascension level"],
-                    g_data["Transcend level"]
+                    g_data["Transcend level"],
                     )
     return game
 
@@ -325,7 +330,7 @@ def auto_click():
     """
     mouse = pynput.mouse.Controller()
     x, y = pyautogui.position()
-    if (x == config.AC_POINT[0]) & (y == config.AC_POINT[1]):
+    if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) & (config.AC_POINT[1] - 5 < x < config.AC_POINT[1] + 5):
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
