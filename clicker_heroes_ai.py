@@ -1,44 +1,55 @@
 import cv2
 import core
 import file_handler as fh
-import renderer
 import renderer as rnd
 import utilities as util
 import detectors as dts
 from pynput import keyboard
 from threading import Thread
+from config import DEBUG
 import time
 
-
-logic_running = False
+LOGIC_RUNNING = False
 
 
 def on_release(key):
-    global logic_running
-    if key == keyboard.Key.space:
-        logic_running ^= True
-        print("Logic:", logic_running)
+    global LOGIC_RUNNING
+    if key == keyboard.Key.ctrl and DEBUG:
+        x, y = util.get_position()
+        value = util.get_pixel_val()
+        print(f"({x},{y}) [{value}]")
+    elif key == keyboard.Key.space:
+        LOGIC_RUNNING ^= True
+        print("Logic:", LOGIC_RUNNING)
+
+
+def game_functions(game):
+    game.check_level()
+    core.power_use_logic(game)
+    util.auto_click()
+    if dts.detect_hero(game):
+        core.hero_leveling_logic(game)
+    else:
+        util.scroll_down(game)
 
 
 def game_loop(game):
     print("SETUP DONE!")
-    global logic_running
+    global LOGIC_RUNNING
     while game.control_window.running:
         game.control_window.root.update()
+        game.control_window.logic = LOGIC_RUNNING
         if not rnd.find_game_win():
             break
         else:
-            if logic_running:
-                game.check_level()
-                if dts.detect_hero(game):
-                    core.hero_leveling_logic(game)
-                else:
-                    util.scroll_down(game)
-                core.power_use_logic(game)
+            if LOGIC_RUNNING and not game.control_window.only_autoclicker:
+                game_functions(game)
+            elif game.control_window.only_autoclicker:
                 util.auto_click()
-            else:
-                img = rnd.get_screenshot()
-                rnd.render(img)
+                time.sleep(1/20)
+                if DEBUG:
+                    img = rnd.get_screenshot()
+                    rnd.render(img)
 
     fh.save_data(game)
     if game.control_window.running:

@@ -35,3 +35,4 @@ WINDOW_WIDTH = 1050  # Game window width
 WINDOW_HEIGHT = 600  # Game window height
 GRIND_TIME = 300  # Time in seconds
 WAIT_TIME = 15
+DEBUG = True

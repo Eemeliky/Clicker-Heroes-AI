@@ -5,6 +5,7 @@ from time import time, sleep
 import pynput
 import numpy as np
 import renderer as rnd
+from detectors import present_detection
 
 
 class ControlWindow(object):
@@ -19,6 +20,7 @@ class ControlWindow(object):
         self.root.configure(bg='grey')
         self.logic = False
         self.running = True
+        self.only_autoclicker = False
         self.start_stop_button = tk.Button(self.root, text="Start/Stop", command=lambda: self.start_stop(),
                                            height=2, width=15)
         self.re_center_button = tk.Button(self.root, text="Re-center cursor",
@@ -26,17 +28,22 @@ class ControlWindow(object):
                                           height=2, width=15)
         self.stop_button = tk.Button(self.root, text="QUIT", command=lambda: self.stop(),
                                      height=2, width=15, fg="red")
-        self.start_stop_button.place(x=3, y=40)
-        self.re_center_button.place(x=3, y=80)
-        self.stop_button.place(x=3, y=120)
+        self.autoclicker_button = tk.Button(self.root, text="Only autoclicker", command=lambda: self.autoclicker(),
+                                            height=2, width=15)
+        self.start_stop_button.place(x=3, y=10)
+        self.re_center_button.place(x=3, y=50)
+        self.autoclicker_button.place(x=3, y=90)
+        self.stop_button.place(x=3, y=150)
         self.change_position()
 
-    def start_stop(self):
-        if not self.logic:
-            self.logic = True
-            pyautogui.moveTo(config.AC_POINT)
-            return
-        self.logic = False
+    @classmethod
+    def start_stop(cls):
+        pyautogui.press("space")
+        pyautogui.moveTo(config.AC_POINT)
+
+    def autoclicker(self):
+        self.only_autoclicker ^= True
+        print("Only Autoclicker:", self.only_autoclicker)
 
     def stop(self):
         self.running = False
@@ -177,8 +184,11 @@ class GameData:
         self.hero = self.heroes[self.hero_index]
 
     def check_level(self):
-        img = rnd.get_screenshot()
-        if self.level % 5 == 0:
+        if present_detection(self):
+            click_on_point(953, 506)
+            sleep(1/2)
+        elif self.level % 5 == 0:
+            img = rnd.get_screenshot()
             if not self.boss_timer:
                 self.boss_timer = time()
             elif (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
@@ -203,6 +213,7 @@ class GameData:
                 print()
                 self.ascend()
         else:
+            img = rnd.get_screenshot()
             if (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
                 self.move_up_level()
 
@@ -242,13 +253,18 @@ def click_on_point(x, y, _return=True):
         pyautogui.moveTo(config.AC_POINT)
 
 
-def get_pixel_val(img):
+def get_pixel_val():
     """
-    :param img: Image array
     :return: Pixel value that the cursor points to
     """
+    img = rnd.get_screenshot()
     x, y = pyautogui.position()
     return img[y, x, :]
+
+
+def get_position():
+    x, y = pyautogui.position()
+    return x, y
 
 
 def create_game_data(h_data, g_data, p_data):
@@ -309,7 +325,8 @@ def scroll_down(game):
             game.reset_hero_queue()
             reset_scroll()
         else:
-            pyautogui.scroll(-250)
+            scroll_amount = round(-150 - 100/game.level)
+            pyautogui.scroll(scroll_amount)
             sleep(1/5)
 
 
@@ -319,7 +336,7 @@ def reset_scroll():
     """
     img = rnd.get_screenshot()
     while not img[210, 513, 2] > 250:
-        pyautogui.scroll(1500)
+        pyautogui.scroll(2500)
         img = rnd.get_screenshot()
     sleep(1/2)
 
@@ -330,7 +347,7 @@ def auto_click():
     """
     mouse = pynput.mouse.Controller()
     x, y = pyautogui.position()
-    if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) & (config.AC_POINT[1] - 5 < x < config.AC_POINT[1] + 5):
+    if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) & (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
