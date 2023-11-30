@@ -5,7 +5,7 @@ from time import time, sleep
 import pynput
 import numpy as np
 import renderer as rnd
-from detectors import present_detection
+from detectors import present_detection, find_gilded
 
 
 class ControlWindow(object):
@@ -116,6 +116,9 @@ class Hero(object):
         else:
             self.level_ceiling += config.LEVEL_OVER_STEP
 
+    def gild(self):
+        self.gilded = True
+
 
 class Power(object):
     """
@@ -184,10 +187,7 @@ class GameData:
         self.hero = self.heroes[self.hero_index]
 
     def check_level(self):
-        if present_detection(self):
-            click_on_point(953, 506)
-            sleep(1/2)
-        elif self.level % 5 == 0:
+        if self.level % 5 == 0:
             img = rnd.get_screenshot()
             if not self.boss_timer:
                 self.boss_timer = time()
@@ -225,6 +225,12 @@ class GameData:
         else:
             print("Game level: {}".format(self.level))
 
+    def detections(self):
+        if present_detection(self):
+            click_on_point(953, 506)
+            sleep(1/2)
+            chest_handler(self)
+
     def ascend(self):
         for hero in self.heroes:
             hero.reset()
@@ -239,6 +245,18 @@ class GameData:
         sleep(1/5)
         click_on_point(460, 450)
         sleep(1/5)
+
+
+def chest_handler(game, relic=False):
+    click_on_point(523, 324, False)
+    sleep(2)
+    if not relic:
+        hero_idx = find_gilded(game)
+        hero = game.heroes[hero_idx]
+        if not hero.gilded:
+            hero.gild()
+    click_on_point(832, 120)
+    sleep(1/2)
 
 
 def click_on_point(x, y, _return=True):

@@ -2,7 +2,7 @@ import config as cf
 import utilities as util
 import renderer as rnd
 import time
-import pyautogui
+from detectors import find_gilded
 
 
 def upgrade_first_levels(game):

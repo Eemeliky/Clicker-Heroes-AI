@@ -14,16 +14,17 @@ LOGIC_RUNNING = False
 
 def on_release(key):
     global LOGIC_RUNNING
-    if key == keyboard.Key.ctrl and DEBUG:
+    if key == keyboard.Key.ctrl_l and DEBUG:
         x, y = util.get_position()
         value = util.get_pixel_val()
-        print(f"({x},{y}) [{value}]")
+        print(f"(x,y) = ({x},{y}) {value} RGB")
     elif key == keyboard.Key.space:
         LOGIC_RUNNING ^= True
         print("Logic:", LOGIC_RUNNING)
 
 
 def game_functions(game):
+    game.detections()
     game.check_level()
     core.power_use_logic(game)
     util.auto_click()
