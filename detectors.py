@@ -52,7 +52,7 @@ def present_detection(game):
 
 
 def find_gilded(game):
-    img = get_screenshot(True)
+    img = get_screenshot(BGR=True)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img_crop = img[220:430, 255:810]
     img_n = cv2.bitwise_not(img_crop)
@@ -67,7 +67,9 @@ def find_gilded(game):
             best_match = (max_val, idx)
     g_hero = game.heroes[best_match[1]]
     if DEBUG:
-        print(g_hero.name, 'Best gild possibility', "Confidence:", round(best_match[0], 4))
+        print(g_hero.name, 'gilded, Confidence:', round(best_match[0], 4))
+    if best_match[0] == 0:
+        return None
     return best_match[1]
 
 

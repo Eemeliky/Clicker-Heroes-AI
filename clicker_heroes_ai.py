@@ -5,7 +5,7 @@ import renderer as rnd
 import utilities as util
 import detectors as dts
 from pynput import keyboard
-from threading import Thread
+import threading
 from config import DEBUG
 import time
 
@@ -51,10 +51,7 @@ def game_loop(game):
                 if DEBUG:
                     img = rnd.get_screenshot()
                     rnd.render(img)
-
     fh.save_data(game)
-    if game.control_window.running:
-        game.control_window.stop()
 
 
 def setup():
@@ -65,14 +62,13 @@ def setup():
         rnd.move_game_win(hwnd)
         time.sleep(1)
         game.create_control_win()
-        game_thread = Thread(target=game_loop, args=(game, ))
+        game_thread = threading.Thread(target=game_loop, args=(game, ), daemon=True)
         listener = keyboard.Listener(on_release=on_release)
         listener.start()
         game_thread.start()
         game.control_window.run()
-        game_thread.join()
         listener.stop()
-        listener.join()
+        game_thread.join()
 
 
 def main():

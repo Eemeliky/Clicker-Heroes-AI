@@ -36,13 +36,15 @@ class ControlWindow(object):
         self.stop_button.place(x=3, y=150)
         self.change_position()
 
-    @classmethod
-    def start_stop(cls):
+    @staticmethod
+    def start_stop():
         pyautogui.press("space")
         pyautogui.moveTo(config.AC_POINT)
 
     def autoclicker(self):
         self.only_autoclicker ^= True
+        if self.only_autoclicker:
+            pyautogui.moveTo(config.AC_POINT)
         print("Only Autoclicker:", self.only_autoclicker)
 
     def stop(self):
@@ -101,10 +103,10 @@ class Hero(object):
         if self.skill_level < self.max_skill_level:
             if self.unique_ups:
                 level_req = config.SKILL_UNLOCKS["Unique"][self.name][self.skill_level]
-                return self.level >= level_req and self.skill_level < self.max_skill_level
             else:
                 level_req = config.SKILL_UNLOCKS["Normal"][self.skill_level]
-                return self.level >= level_req and self.skill_level < self.max_skill_level
+            return self.level >= level_req
+        return False
 
     def raise_level_ceiling(self):
         if self.level_ceiling < max(config.LEVEL_GUIDE):
@@ -137,6 +139,8 @@ class Power(object):
     def unlock(self):
         self.unlocked = True
         print(self.name, "Unlocked")
+        if self.name == "The Dark Ritual":
+            self.activate()
 
     def activate(self):
         pyautogui.press(self.key)
@@ -207,7 +211,7 @@ class GameData:
                 self.grind_timer = 0
                 self.move_up_level()
                 print("GRIND ENDED!")
-            elif self.level > 130 and amenhotep.level > 150:
+            elif self.level > (130 + 100 * self.ascensions) and amenhotep.level > 150:
                 print("ASCENSION", self.level)
                 print()
                 print()
@@ -241,17 +245,28 @@ class GameData:
         self.ascensions += 1
         self.boss_timer = 0
         self.grind_timer = 0
-        click_on_point(1000, 245, False)
+        self.unlocked_powers = 0
+        click_on_point(1000, 245, center=False)
         sleep(1/5)
+        img = rnd.get_screenshot()
+        if (img[384, 485, :] == np.array([68, 215, 35])).all():
+            click_on_point(485, 384, center=False)
+            sleep(1/5)
         click_on_point(460, 450)
         sleep(1/5)
 
 
-def chest_handler(game, relic=False):
+def chest_handler(game):
+    """
+    Clicks on the chest that appears on the screen after opening present and calls for hero gilding.
+    :param game: GameData class object
+    """
     click_on_point(523, 324, False)
     sleep(2)
-    if not relic:
-        hero_idx = find_gilded(game)
+    hero_idx = find_gilded(game)
+    if not hero_idx:
+        print("ERROR, no suitable hero found!")
+    else:
         hero = game.heroes[hero_idx]
         if not hero.gilded:
             hero.gild()
@@ -259,24 +274,27 @@ def chest_handler(game, relic=False):
     sleep(1/2)
 
 
-def click_on_point(x, y, _return=True):
+def click_on_point(x, y, center=True):
     """
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
-    :param _return: flag for returning to autoclicker point
+    :param center: flag for returning to autoclicker point
     """
     pyautogui.moveTo(x, y)
     pyautogui.click()
-    if _return:
+    if center:
         pyautogui.moveTo(config.AC_POINT)
 
 
-def get_pixel_val():
+def get_pixel_val(x=0, y=0):
     """
-    :return: Pixel value that the cursor points to
+    :param x: x-coordinate on screen
+    :param y: y-coordinate on screen
+    :return: Pixel value of given point or the point that the cursor points to
     """
     img = rnd.get_screenshot()
-    x, y = pyautogui.position()
+    if x == 0 and y == 0:
+        x, y = pyautogui.position()
     return img[y, x, :]
 
 

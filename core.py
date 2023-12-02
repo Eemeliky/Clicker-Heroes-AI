@@ -1,8 +1,5 @@
 import config as cf
-import utilities as util
 import renderer as rnd
-import time
-from detectors import find_gilded
 
 
 def upgrade_first_levels(game):
@@ -61,7 +58,7 @@ def hero_leveling_logic(game):
             if lvl_clg != hero.level_ceiling:
                 if lvl_clg == cf.LEVEL_GUIDE[0]:
                     game.reset_hero_queue()
-                elif game.hero_index > 24 and hero.level < 425:
+                elif game.hero_index > 24 and hero.level < 400:
                     # after 'Frostleaf' the price for new hero raises considerably
                     # -> that we have to wait for current best hero to be lvl +400 to buy new hero
                     game.reset_hero_queue()
@@ -77,12 +74,12 @@ def loop_basic_powers(game):
     if game.unlocked_powers < 7:
         for idx in range(game.unlocked_powers):
             power = game.powers[idx]
-            if not power.on_cooldown():
+            if not power.on_cooldown:
                 power.activate()
     else:
         for idx in range(7):
             power = game.powers[idx]
-            if not power.on_cooldown():
+            if not power.on_cooldown:
                 power.activate()
 
 
@@ -93,24 +90,28 @@ def power_use_logic(game):
     """
     if not game.boss_timer and game.unlocked_powers < len(game.powers):
         power_unlocker(game)
+
     elif game.boss_timer:
         if 0 < game.unlocked_powers < 8:
             loop_basic_powers(game)
+
         elif game.unlocked_powers == 8:
             energize = game.powers[7]
             lucky_strike = game.powers[2]
-            if not energize.on_cooldown() and not lucky_strike.on_cooldown():
+
+            if not energize.on_cooldown and not lucky_strike.on_cooldown:
                 energize.activate()
                 lucky_strike.activate()
             else:
                 loop_basic_powers(game)
+
         elif game.unlocked_powers == len(game.powers):
             energize = game.powers[7]
             reload = game.powers[8]
-            if not energize.on_cooldown() and not reload.on_cooldown():
+            if not energize.on_cooldown and not reload.on_cooldown:
                 lucky_strike = game.powers[2]
                 golden_clicks = game.powers[4]
-                if not lucky_strike.on_cooldown() and not golden_clicks.on_cooldown():
+                if not lucky_strike.on_cooldown and not golden_clicks.on_cooldown:
                     lucky_strike.activate()
                     golden_clicks.activate()
                     energize.activate()

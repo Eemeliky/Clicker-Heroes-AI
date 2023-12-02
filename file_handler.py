@@ -36,6 +36,7 @@ def save_data(game):
     Saves current game data to save.json file
     :param game: GameData class object
     """
+    print("Saving...")
     save_dict = {'Heroes': {},
                  'Powers': {}}
     for hero in game.heroes:
