@@ -207,6 +207,46 @@
             "Max skill level": 4,
             "Gilded": false,
             "Unique skills": false
+        },
+        "Dread Knight": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Atlas": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Terra": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Phthalo": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
+        },
+        "Orntchya Gladeye, Didensy Banana": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
         }
     },
     "Powers": {
