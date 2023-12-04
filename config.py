@@ -34,5 +34,13 @@ CONFIDENCE_THRESHOLD = 0.7  # Threshold for the detection of heroes
 WINDOW_WIDTH = 1050  # Game window width
 WINDOW_HEIGHT = 600  # Game window height
 GRIND_TIME = 300  # Time in seconds
-WAIT_TIME = 15
+WAIT_TIME = 30
 DEBUG = True
+
+
+def set_level_guide(asc=0):
+    global LEVEL_GUIDE
+    if asc > 2:
+        tmp = SKILL_UNLOCKS["Normal"]
+        tmp.append(200)
+        LEVEL_GUIDE = tmp
