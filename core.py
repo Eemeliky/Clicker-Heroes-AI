@@ -32,6 +32,7 @@ def improve_hero(game):
                 hero.level_skill()
         elif img[y, cf.LEVEL_UP_X, 2] > 200:
             hero.level_up()
+            game.update_hero_timer()
 
 
 def hero_leveling_logic(game):
@@ -54,16 +55,11 @@ def hero_leveling_logic(game):
         else:
             lvl_clg = hero.level_ceiling
             improve_hero(game)
-
-            if lvl_clg != hero.level_ceiling:
-                if lvl_clg == cf.LEVEL_GUIDE[0]:
-                    game.reset_hero_queue()
-                elif game.hero_index > 24 and hero.level < 400:
-                    # after 'Frostleaf' the price for new hero raises considerably
-                    # -> that we have to wait for current best hero to be lvl +400 to buy new hero
-                    game.reset_hero_queue()
-                else:
-                    game.next_hero()
+            timer = game.get_hero_timer()
+            if timer > cf.WAIT_TIME:
+                game.next_hero()
+            elif lvl_clg != hero.level_ceiling:
+                game.next_hero()
 
 
 def loop_basic_powers(game):
@@ -74,12 +70,12 @@ def loop_basic_powers(game):
     if game.unlocked_powers < 7:
         for idx in range(game.unlocked_powers):
             power = game.powers[idx]
-            if not power.on_cooldown:
+            if not power.on_cooldown():
                 power.activate()
     else:
         for idx in range(7):
             power = game.powers[idx]
-            if not power.on_cooldown:
+            if not power.on_cooldown():
                 power.activate()
 
 

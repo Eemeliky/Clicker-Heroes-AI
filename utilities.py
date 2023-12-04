@@ -175,6 +175,7 @@ class GameData:
         self.transcends = transcend
         self.boss_timer = 0
         self.grind_timer = 0
+        self.level_up_timer = 0
 
     def create_control_win(self):
         self.control_window = ControlWindow()
@@ -182,6 +183,7 @@ class GameData:
     def reset_hero_queue(self):
         self.hero_index = 0
         self.hero = self.heroes[self.hero_index]
+        self.update_hero_timer()
 
     def next_hero(self):
         print(self.hero.name, "lvl", self.hero.level)
@@ -189,6 +191,13 @@ class GameData:
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
         self.hero = self.heroes[self.hero_index]
+        self.update_hero_timer()
+
+    def update_hero_timer(self):
+        self.level_up_timer = time()
+
+    def get_hero_timer(self):
+        return time() - self.level_up_timer
 
     def check_level(self):
         if self.level % 5 == 0:
@@ -199,11 +208,13 @@ class GameData:
                 print("BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
                 self.boss_timer = 0
                 self.move_up_level()
+                self.update_hero_timer()
             elif (time() - self.boss_timer) > 30:
                 self.level -= 1
                 self.boss_timer = 0
                 self.grind_timer = time()
                 click_on_point(728, 82)
+                self.update_hero_timer()
                 print(f"GRINDING TIME! ({config.GRIND_TIME}s)")
         elif self.grind_timer:
             amenhotep = self.heroes[18]
@@ -347,6 +358,7 @@ def create_game_data(h_data, g_data, p_data):
                     g_data["Ascension level"],
                     g_data["Transcend level"],
                     )
+    config.set_level_guide(asc=game.ascensions)
     return game
 
 
