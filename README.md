@@ -10,3 +10,8 @@
 `pip install pynput`
 
 `pip install pywin32`
+
+### Game settings
+Disable relic found popups    
+Set game to windowed mode   
+Set buy exact hero quantities ON
