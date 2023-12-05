@@ -41,8 +41,10 @@ def hero_leveling_logic(game):
     :param game: GameData class object
     :return:
     """
-    hero = game.hero
+    if game.level_up_timer == 0:
+        game.update_hero_timer()
     if not game.boss_timer:
+        hero = game.hero
         if hero.level > hero.level_ceiling:
             # Should not be true under normal conditions
             while hero.level > hero.level_ceiling:

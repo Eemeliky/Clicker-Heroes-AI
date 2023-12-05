@@ -96,7 +96,7 @@ class Hero(object):
     def reset(self):
         self.level = 0
         self.skill_level = 0
-        self.level_ceiling = 1
+        self.level_ceiling = config.LEVEL_GUIDE[0]
         self.name_pos = (-1, -1)
 
     def skill_unlocked(self):
@@ -186,7 +186,10 @@ class GameData:
         self.update_hero_timer()
 
     def next_hero(self):
-        print(self.hero.name, "lvl", self.hero.level)
+        if self.hero_index == 0 and self.hero.level > 100:
+            print("Skipping Cid")
+        else:
+            print(self.hero.name, "lvl", self.hero.level)
         self.hero_index += 1
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
@@ -208,7 +211,6 @@ class GameData:
                 print("BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
                 self.boss_timer = 0
                 self.move_up_level()
-                self.update_hero_timer()
             elif (time() - self.boss_timer) > 30:
                 self.level -= 1
                 self.boss_timer = 0

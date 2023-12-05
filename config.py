@@ -40,7 +40,9 @@ DEBUG = True
 
 def set_level_guide(asc=0):
     global LEVEL_GUIDE
+    global LEVEL_OVER_STEP
     if asc > 2:
         tmp = SKILL_UNLOCKS["Normal"]
         tmp.append(200)
         LEVEL_GUIDE = tmp
+        LEVEL_OVER_STEP = 100
