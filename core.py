@@ -1,5 +1,8 @@
+import config
 import config as cf
 import renderer as rnd
+import pyautogui
+import numpy as np
 
 
 def upgrade_first_levels(game):
@@ -14,25 +17,40 @@ def upgrade_first_levels(game):
         hero.level_up()
 
 
-def improve_hero(game):
+def level_up(game, img):
+    hero = game.hero
+    x, y = hero.name_pos
+    if hero.skill_unlocked():
+        pixel_val = [img[y + 45, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
+        if max(pixel_val) > 50:
+            hero.level_skill()
+    elif img[y + 45, cf.LEVEL_UP_X, 2] > 200:  # 45px is offset from the top of the hero name to the upgrade button
+        if hero.skill_level < hero.max_skill_level:
+            hero.level_up()
+            game.update_hero_timer()
+        elif config.LEVEL_OVER_STEP > 25:
+            for x in range(41):
+                if img[y + 55, x + 92, 2] == 0:
+                    hero.level_up(CTRL=True)
+                    break
+        else:
+            hero.level_up()
+            game.update_hero_timer()
+
+
+def level_up_functions(game):
     """
     Levels up hero if it's available or buys new skill if it's unlocked
     :param game: GameData class object
     """
-    if game.level < 3:
+    if game.level < 3 and game.ascensions == 0:
         upgrade_first_levels(game)
     else:
-        hero = game.hero
-        img = rnd.get_screenshot()
-        x, y = hero.name_pos
-        y = y + 45  # 45px is offset from the top of the hero name to the upgrade button
-        if hero.skill_unlocked():
-            pixel_val = [img[y, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
-            if max(pixel_val) > 50:
-                hero.level_skill()
-        elif img[y, cf.LEVEL_UP_X, 2] > 200:
-            hero.level_up()
-            game.update_hero_timer()
+        if game.hero.skill_level < game.hero.max_skill_level:
+            img = rnd.get_screenshot()
+        else:
+            img = rnd.get_screenshot(CTRL=True)
+        level_up(game, img)
 
 
 def hero_leveling_logic(game):
@@ -56,7 +74,7 @@ def hero_leveling_logic(game):
 
         else:
             lvl_clg = hero.level_ceiling
-            improve_hero(game)
+            level_up_functions(game)
             timer = game.get_hero_timer()
             if timer > cf.WAIT_TIME:
                 game.next_hero()

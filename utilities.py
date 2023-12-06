@@ -73,11 +73,15 @@ class Hero(object):
         self.unique_ups = unique_ups
         self.name_pos = (-1, -1)
 
-    def level_up(self):
+    def level_up(self, CTRL=False):
         x, y = self.name_pos
-        click_on_point(config.LEVEL_UP_X, y + 45)
-        self.level += 1
-        if self.level == self.level_ceiling:
+        if CTRL:
+            click_on_point(config.LEVEL_UP_X, y + 45, CTRL=CTRL)
+            self.level += 100
+        if not CTRL:
+            click_on_point(config.LEVEL_UP_X, y + 45)
+            self.level += 1
+        if self.level >= self.level_ceiling:
             if self.unique_ups:
                 if self.level_ceiling not in config.SKILL_UNLOCKS["Unique"][self.name]:
                     self.raise_level_ceiling()
@@ -86,11 +90,11 @@ class Hero(object):
                     self.raise_level_ceiling()
 
     def level_skill(self):
-        if self.level == self.level_ceiling:
-            self.raise_level_ceiling()
         x, y = self.name_pos
         click_on_point(config.SKILL_X_COORDINATE + (config.SKILL_OFFSET * self.skill_level), y + 45)
         self.skill_level += 1
+        if self.level == self.level_ceiling:
+            self.raise_level_ceiling()
         print(f"{self.name} Skill level: {self.skill_level}/{self.max_skill_level}")
 
     def reset(self):
@@ -287,14 +291,25 @@ def chest_handler(game):
     sleep(1/2)
 
 
-def click_on_point(x, y, center=True):
+def click_on_point(x, y, center=True, CTRL=False):
     """
+    :param CTRL: flag for control click
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
     :param center: flag for returning to autoclicker point
     """
-    pyautogui.moveTo(x, y)
-    pyautogui.click()
+    if CTRL:
+        pyautogui.moveTo(x, y)
+        pyautogui.keyDown("ctrlleft")
+        sleep(1/10)
+        pyautogui.mouseDown()
+        pyautogui.mouseUp()
+        pyautogui.keyUp("ctrlleft")
+
+    if not CTRL:
+        pyautogui.moveTo(x, y)
+        pyautogui.click()
+
     if center:
         pyautogui.moveTo(config.AC_POINT)
 
@@ -391,9 +406,10 @@ def reset_scroll():
     sleep(1/2)
 
 
-def auto_click():
+def auto_click(WAIT=0):
     """
     *3x ClICKS* on the autoclicker point
+    :param WAIT: wait time in seconds
     """
     mouse = pynput.mouse.Controller()
     x, y = pyautogui.position()
@@ -401,3 +417,5 @@ def auto_click():
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
         mouse.click(pynput.mouse.Button.left)
+        if WAIT > 0:
+            sleep(WAIT)
