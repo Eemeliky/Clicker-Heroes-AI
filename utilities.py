@@ -155,11 +155,11 @@ class Power(object):
         self.unlocked = False
         self.cd_timer = 0
 
-    def on_cooldown(self):
+    def ready(self):
         if (time() - self.cd_timer) > self.cooldown:
-            return False
+            return True
 
-        return True
+        return False
 
 
 class GameData:
@@ -258,6 +258,7 @@ class GameData:
             chest_handler(self)
 
     def ascend(self):
+        print("Ascending..")
         for hero in self.heroes:
             hero.reset()
         for power in self.powers:

@@ -95,12 +95,12 @@ def loop_basic_powers(game):
     if game.unlocked_powers < 7:
         for idx in range(game.unlocked_powers):
             power = game.powers[idx]
-            if not power.on_cooldown():
+            if power.ready():
                 power.activate()
     else:
         for idx in range(7):
             power = game.powers[idx]
-            if not power.on_cooldown():
+            if power.ready():
                 power.activate()
 
 
@@ -120,7 +120,7 @@ def power_use_logic(game):
             energize = game.powers[7]
             lucky_strike = game.powers[2]
 
-            if not energize.on_cooldown and not lucky_strike.on_cooldown:
+            if energize.ready() and lucky_strike.ready():
                 energize.activate()
                 lucky_strike.activate()
             else:
@@ -129,10 +129,10 @@ def power_use_logic(game):
         elif game.unlocked_powers == len(game.powers):
             energize = game.powers[7]
             reload = game.powers[8]
-            if not energize.on_cooldown and not reload.on_cooldown:
+            if energize.ready() and reload.ready():
                 lucky_strike = game.powers[2]
                 golden_clicks = game.powers[4]
-                if not lucky_strike.on_cooldown and not golden_clicks.on_cooldown:
+                if lucky_strike.ready() and golden_clicks.ready():
                     lucky_strike.activate()
                     golden_clicks.activate()
                     energize.activate()
