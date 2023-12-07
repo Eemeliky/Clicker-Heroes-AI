@@ -1,9 +1,7 @@
 import cv2
-
 import config
 from config import IMG_PATH, CONFIDENCE_THRESHOLD, DEBUG
 from renderer import render, get_screenshot
-from time import sleep
 import numpy as np
 
 
@@ -73,32 +71,19 @@ def find_gilded(game):
     return best_match[1]
 
 
-# TODO: REWRITE ALL FUNCTIONS UNDER
-def bee_detection(img, game, game_win, mouse, button):
-    if game.level > 50:
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        image_name = IMG_PATH + 'bee2.png'
-        needle_img = cv2.imread(image_name, 0)
-        needle_img = cv2.bitwise_not(needle_img)
-        img_g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        img_n = cv2.bitwise_not(img_g)
-        img_n = img_n[100:150, 590:960]
-        results_img = cv2.matchTemplate(img_n, needle_img, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(results_img)
+def find_bee():
+    img = get_screenshot(BGR=True)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    name = IMG_PATH + 'Bee.png'
+    needle_img = cv2.imread(name, 0)
+    img = img[50:150, 590:960]
+    results_img = cv2.matchTemplate(img, needle_img, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(results_img)
+    if max_val > 0.55:
+        if DEBUG:
+            print('Bee found with confidence:', round(max_val, 4))
         x, y = max_loc
-        if max_val > 0.6:
-            width = needle_img.shape[1]
-            height = needle_img.shape[0]
-            starting_point = (int(x), int(y))
-            ending_point = (int(x + width), int(y + height))
-            cv2.rectangle(img, starting_point, ending_point, color=(0, 0, 255), thickness=2)
-        if max_val > CONFIDENCE_THRESHOLD:
-            print("BEE FOUND!!!")
-            height = needle_img.shape[0]
-            for _ in range(1, 20):
-                pyautogui.moveTo(x, (y + round(height / 2)))
-                mouse.click(button)
-                mouse.click(button)
-                mouse.click(button)
-            pyautogui.moveTo(AUTOCLICKER_POINT)
-        game_win.render(True, img)
+        height = needle_img.shape[0]
+        y = round(y + (height / 2))
+        return x + 590, y + 50
+    return -1, -1

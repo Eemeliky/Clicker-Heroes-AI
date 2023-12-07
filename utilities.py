@@ -5,7 +5,7 @@ from time import time, sleep
 import pynput
 import numpy as np
 import renderer as rnd
-from detectors import present_detection, find_gilded
+from detectors import present_detection, find_gilded, find_bee
 
 
 class ControlWindow(object):
@@ -113,7 +113,7 @@ class Hero(object):
         return False
 
     def raise_level_ceiling(self):
-        if self.level_ceiling < max(config.LEVEL_GUIDE):
+        if self.level_ceiling < max(config.LEVEL_GUIDE) and self.skill_level < self.max_skill_level:
             if self.level_ceiling not in config.LEVEL_GUIDE:
                 self.level_ceiling = config.LEVEL_GUIDE[0]
             else:
@@ -247,6 +247,11 @@ class GameData:
             print("Game level: {}".format(self.level))
 
     def detections(self):
+        if self.level > 50:
+            x, y = find_bee()
+            if x > 0:
+                for _ in range(12):
+                    bee_clicker(x, y)
         if present_detection(self):
             click_on_point(953, 506)
             sleep(1/2)
@@ -404,6 +409,16 @@ def reset_scroll():
         pyautogui.scroll(2500)
         img = rnd.get_screenshot()
     sleep(1/2)
+
+
+def bee_clicker(x, y):
+    mouse = pynput.mouse.Controller()
+    pyautogui.moveTo(x, y)
+    mouse.click(pynput.mouse.Button.left)
+    mouse.click(pynput.mouse.Button.left)
+    mouse.click(pynput.mouse.Button.left)
+    mouse.click(pynput.mouse.Button.left)
+    mouse.click(pynput.mouse.Button.left)
 
 
 def auto_click(WAIT=0):

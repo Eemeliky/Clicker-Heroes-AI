@@ -17,17 +17,20 @@ def upgrade_first_levels(game):
         hero.level_up()
 
 
-def level_up(game, img):
+def upgrade_normal(game, img):
     hero = game.hero
     x, y = hero.name_pos
+
     if hero.skill_unlocked():
         pixel_val = [img[y + 45, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
         if max(pixel_val) > 50:
             hero.level_skill()
+
     elif img[y + 45, cf.LEVEL_UP_X, 2] > 200:  # 45px is offset from the top of the hero name to the upgrade button
         if hero.skill_level < hero.max_skill_level:
             hero.level_up()
             game.update_hero_timer()
+
         elif config.LEVEL_OVER_STEP > 25:
             for x in range(41):
                 if img[y + 55, x + 92, 2] == 0:
@@ -38,7 +41,7 @@ def level_up(game, img):
             game.update_hero_timer()
 
 
-def level_up_functions(game):
+def upgrade_functions(game):
     """
     Levels up hero if it's available or buys new skill if it's unlocked
     :param game: GameData class object
@@ -50,7 +53,7 @@ def level_up_functions(game):
             img = rnd.get_screenshot()
         else:
             img = rnd.get_screenshot(CTRL=True)
-        level_up(game, img)
+        upgrade_normal(game, img)
 
 
 def hero_leveling_logic(game):
@@ -61,11 +64,13 @@ def hero_leveling_logic(game):
     """
     if game.level_up_timer == 0:
         game.update_hero_timer()
+
     if not game.boss_timer:
         hero = game.hero
         if hero.level > hero.level_ceiling:
             # Should not be true under normal conditions
             while hero.level > hero.level_ceiling:
+                print("Manually raising level ceiling")
                 hero.raise_level_ceiling()
 
         elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 110):
@@ -74,11 +79,11 @@ def hero_leveling_logic(game):
 
         else:
             lvl_clg = hero.level_ceiling
-            level_up_functions(game)
+            upgrade_functions(game)
             timer = game.get_hero_timer()
-            if timer > cf.WAIT_TIME:
+            if lvl_clg != hero.level_ceiling:
                 game.next_hero()
-            elif lvl_clg != hero.level_ceiling:
+            elif timer > cf.WAIT_TIME:
                 game.next_hero()
 
 

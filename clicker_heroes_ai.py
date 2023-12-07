@@ -36,7 +36,6 @@ def game_functions(game):
 
 def game_loop(game):
     print("SETUP DONE!")
-    game.ascend()
     global LOGIC_RUNNING
     while game.control_window.running:
         game.control_window.root.update()
