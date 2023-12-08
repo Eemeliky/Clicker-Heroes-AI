@@ -82,8 +82,7 @@ def find_bee():
     if max_val > 0.55:
         if DEBUG:
             print('Bee found with confidence:', round(max_val, 4))
-        x, y = max_loc
-        height = needle_img.shape[0]
-        y = round(y + (height / 2))
-        return x + 590, y + 50
+        x, _ = max_loc
+        y = 100
+        return x + 590, y
     return -1, -1
