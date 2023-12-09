@@ -279,69 +279,77 @@
             "Max skill level": 4,
             "Gilded": false,
             "Unique skills": true
+        },
+        "Chiron": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
         }
     },
     "Powers": {
         "Clickstorm": {
             "Cooldown": 600,
             "Key": "1",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Cid, the Helpful Adventurer",
             "Unlock skill": 2
         },
         "Powersurge": {
             "Cooldown": 600,
             "Key": "2",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Ivan, the Drunken Brawler",
             "Unlock skill": 4
         },
         "Lucky Strikes": {
             "Cooldown": 1800,
             "Key": "3",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Alexa, Assassin",
             "Unlock skill": 5
         },
         "Metal Detector": {
             "Cooldown": 1800,
             "Key": "4",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Broyle Lindeoven, Fire Mage",
             "Unlock skill": 5
         },
         "Golden Clicks": {
             "Cooldown": 3600,
             "Key": "5",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "King Midas",
             "Unlock skill": 5
         },
         "The Dark Ritual": {
             "Cooldown": 28800,
             "Key": "6",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Abaddon",
             "Unlock skill": 4
         },
         "Super Clicks": {
             "Cooldown": 3600,
             "Key": "7",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Beastlord",
             "Unlock skill": 5
         },
         "Energize": {
             "Cooldown": 3600,
             "Key": "8",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Aphrodite, Goddess of Love",
             "Unlock skill": 4
         },
         "Reload": {
             "Cooldown": 3600,
             "Key": "9",
-            "Unlocked": true,
+            "Unlocked": false,
             "Unlock hero": "Shinatobe, Wind Deity",
             "Unlock skill": 5
         }
