@@ -15,12 +15,15 @@ SKILL_UNLOCKS = {"Normal": [10, 25, 50, 75, 100, 125, 150],
                             "Chiron": [10, 25, 50, 100],
                             "Moloch": [10, 25, 50, 100],
                             "Bomber Max": [10, 25, 50, 100],
-                            "Gog": [10, 25, 50, 100]
+                            "Gog": [10, 25, 50, 100],
+                            "Wepwawet": [25, 100, 1500, 2000],
+                            "Tsuchi": [1000, 2000, 4000, 8000]
                             }
                  }
 
 # Hero leveling guide logic for the program to follow
 LEVEL_GUIDE = [1, 5, 10, 15, 25, 50, 75, 85, 100, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225]
+ASCENSION_STEP = 43
 LEVEL_OVER_STEP = 25  # Step for leveling heroes over the guide
 GAME_NAME = 'Clicker Heroes'
 AC_POINT = (775, 365)  # Only point where autoclicker works
@@ -38,11 +41,16 @@ WAIT_TIME = 30
 DEBUG = True
 
 
-def set_level_guide(asc=0):
+def set_level_guide(ascensions, transcends):
     global LEVEL_GUIDE
     global LEVEL_OVER_STEP
-    if asc > 2:
+    global ASCENSION_STEP
+    LEVEL_GUIDE = [1, 5, 10, 15, 25, 50, 75, 85, 100, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225]
+    ASCENSION_STEP = 43
+    if ascensions > 2:
         tmp = SKILL_UNLOCKS["Normal"]
         tmp.append(200)
         LEVEL_GUIDE = tmp
         LEVEL_OVER_STEP = 100
+    if transcends > 0:
+        ASCENSION_STEP = 100 * transcends

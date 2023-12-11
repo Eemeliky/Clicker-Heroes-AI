@@ -97,11 +97,13 @@ class Hero(object):
             self.raise_level_ceiling()
         print(f"{self.name} Skill level: {self.skill_level}/{self.max_skill_level}")
 
-    def reset(self):
+    def reset(self, gildReset=False):
         self.level = 0
         self.skill_level = 0
         self.level_ceiling = config.LEVEL_GUIDE[0]
         self.name_pos = (-1, -1)
+        if gildReset:
+            self.gilded = False
 
     def skill_unlocked(self):
         if self.skill_level < self.max_skill_level:
@@ -207,7 +209,12 @@ class GameData:
         return time() - self.level_up_timer
 
     def check_level(self):
-        if self.level % 5 == 0:
+        if self.level == 1 and self.ascensions > 4:
+            print(f"  {self.transcends}. Transcend")
+            print()
+            print()
+            self.transcend()
+        elif self.level % 5 == 0:
             img = rnd.get_screenshot()
             if not self.boss_timer:
                 self.boss_timer = time()
@@ -228,8 +235,8 @@ class GameData:
                 self.grind_timer = 0
                 self.move_up_level()
                 print("GRIND ENDED!")
-            elif self.level > (130 + 100 * self.ascensions) and amenhotep.level > 150:
-                print("ASCENSION", self.level)
+            elif amenhotep.level >= 150 and self.level > (130 + (config.ASCENSION_STEP * self.ascensions)):
+                print(f"{self.ascensions}. Ascension")
                 print()
                 print()
                 self.ascend()
@@ -242,9 +249,9 @@ class GameData:
         self.level += 1
         click_on_point(813, 85)
         if self.level % 5 == 0:
-            print("Game level: {} (BOSS)".format(self.level))
+            print("  Game level: {} (BOSS)".format(self.level))
         else:
-            print("Game level: {}".format(self.level))
+            print("  Game level: {}".format(self.level))
 
     def detections(self):
         if self.level > 50:
@@ -252,20 +259,21 @@ class GameData:
             if x > 0:
                 for _ in range(12):
                     bee_clicker(x, y)
-        if present_detection(self):
+        '''if present_detection(self):
             click_on_point(953, 506)
             sleep(1/2)
-            chest_handler(self)
+            chest_handler(self)'''
 
     def ascend(self):
         print("Ascending..")
+        self.ascensions += 1
+        config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
         for hero in self.heroes:
             hero.reset()
         for power in self.powers:
             power.reset()
         self.reset_hero_queue()
         self.level = 1
-        self.ascensions += 1
         self.boss_timer = 0
         self.grind_timer = 0
         self.unlocked_powers = 0
@@ -277,6 +285,29 @@ class GameData:
             sleep(1/5)
         click_on_point(460, 450)
         sleep(1/5)
+
+    def transcend(self):
+        print("Transcending..")
+        self.transcends += 1
+        self.ascensions = 0
+        config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
+        for hero in self.heroes:
+            hero.reset(gildReset=True)
+        for power in self.powers:
+            power.reset()
+        self.reset_hero_queue()
+        self.level = 1
+        self.boss_timer = 0
+        self.grind_timer = 0
+        self.unlocked_powers = 0
+        click_on_point(490, 120, center=False)
+        sleep(1 / 2)
+        click_on_point(315, 235, center=False)
+        sleep(1 / 8)
+        img = rnd.get_screenshot()
+        if img[525, 445, 0] > 100:
+            click_on_point(445, 525, center=False)
+        click_on_point(400, 470)
 
 
 def chest_handler(game):
@@ -381,7 +412,7 @@ def create_game_data(h_data, g_data, p_data):
                     g_data["Ascension level"],
                     g_data["Transcend level"],
                     )
-    config.set_level_guide(asc=game.ascensions)
+    config.set_level_guide(ascensions=game.ascensions, transcends=game.transcends)
     return game
 
 
