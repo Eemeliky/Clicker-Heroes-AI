@@ -81,13 +81,8 @@ class Hero(object):
         if not CTRL:
             click_on_point(config.LEVEL_UP_X, y + 45)
             self.level += 1
-        if self.level >= self.level_ceiling:
-            if self.unique_ups:
-                if self.level_ceiling not in config.SKILL_UNLOCKS["Unique"][self.name]:
-                    self.raise_level_ceiling()
-            else:
-                if self.level_ceiling not in config.SKILL_UNLOCKS["Normal"]:
-                    self.raise_level_ceiling()
+        if self.level >= self.level_ceiling and not self.skill_unlocked():
+            self.raise_level_ceiling()
 
     def level_skill(self):
         x, y = self.name_pos
@@ -115,9 +110,9 @@ class Hero(object):
         return False
 
     def raise_level_ceiling(self):
-        if self.level_ceiling < max(config.LEVEL_GUIDE) and self.skill_level < self.max_skill_level:
+        if self.level_ceiling < max(config.LEVEL_GUIDE) and (self.skill_level < self.max_skill_level):
             if self.level_ceiling not in config.LEVEL_GUIDE:
-                self.level_ceiling = config.LEVEL_GUIDE[0]
+                self.level_ceiling += config.LEVEL_OVER_STEP
             else:
                 idx = config.LEVEL_GUIDE.index(self.level_ceiling) + 1
                 self.level_ceiling = config.LEVEL_GUIDE[idx]
@@ -192,7 +187,7 @@ class GameData:
         self.update_hero_timer()
 
     def next_hero(self):
-        if self.hero_index == 0 and self.hero.level > 100:
+        if self.hero_index == 0 and self.hero.level >= 100:
             print("Skipping Cid")
         else:
             print(self.hero.name, "lvl", self.hero.level)
@@ -210,9 +205,9 @@ class GameData:
 
     def check_level(self):
         if self.level == 1 and self.ascensions > 4:
+            print()
+            print()
             print(f"  {self.transcends}. Transcend")
-            print()
-            print()
             self.transcend()
         elif self.level % 5 == 0:
             img = rnd.get_screenshot()
@@ -236,9 +231,10 @@ class GameData:
                 self.move_up_level()
                 print("GRIND ENDED!")
             elif amenhotep.level >= 150 and self.level > (130 + (config.ASCENSION_STEP * self.ascensions)):
+                print("Ascending..")
+                print()
+                print()
                 print(f"{self.ascensions}. Ascension")
-                print()
-                print()
                 self.ascend()
         else:
             img = rnd.get_screenshot()
@@ -259,13 +255,12 @@ class GameData:
             if x > 0:
                 for _ in range(12):
                     bee_clicker(x, y)
-        '''if present_detection(self):
+        if present_detection(self):
             click_on_point(953, 506)
             sleep(1/2)
-            chest_handler(self)'''
+            chest_handler(self)
 
     def ascend(self):
-        print("Ascending..")
         self.ascensions += 1
         config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
         for hero in self.heroes:

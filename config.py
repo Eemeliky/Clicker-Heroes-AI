@@ -21,8 +21,8 @@ SKILL_UNLOCKS = {"Normal": [10, 25, 50, 75, 100, 125, 150],
                             }
                  }
 
-# Hero leveling guide logic for the program to follow
-LEVEL_GUIDE = [1, 5, 10, 15, 25, 50, 75, 85, 100, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225]
+# Hero leveling guide logic for the program to follow (MUST GO OVER LEVEL 150)
+LEVEL_GUIDE = [1, 10, 25, 50, 75, 100, 125, 150, 175]
 ASCENSION_STEP = 43
 LEVEL_OVER_STEP = 25  # Step for leveling heroes over the guide
 GAME_NAME = 'Clicker Heroes'
@@ -45,8 +45,9 @@ def set_level_guide(ascensions, transcends):
     global LEVEL_GUIDE
     global LEVEL_OVER_STEP
     global ASCENSION_STEP
-    LEVEL_GUIDE = [1, 5, 10, 15, 25, 50, 75, 85, 100, 115, 125, 135, 145, 155, 165, 175, 185, 195, 205, 215, 225]
+    LEVEL_GUIDE = [1, 10, 25, 50, 75, 100, 125, 150, 175]
     ASCENSION_STEP = 43
+    LEVEL_OVER_STEP = 25
     if ascensions > 2:
         tmp = SKILL_UNLOCKS["Normal"]
         tmp.append(200)
