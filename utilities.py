@@ -6,6 +6,7 @@ import pynput
 import numpy as np
 import renderer as rnd
 from detectors import present_detection, find_gilded, find_bee
+from PIL import Image
 
 
 class ControlWindow(object):
@@ -76,17 +77,17 @@ class Hero(object):
     def level_up(self, CTRL=False):
         x, y = self.name_pos
         if CTRL:
-            click_on_point(config.LEVEL_UP_X, y + 45, CTRL=CTRL)
+            click_on_point(config.LEVEL_UP_X, y + config.LEVEL_UP_Y_OFFSET, CTRL=CTRL)
             self.level += 100
         if not CTRL:
-            click_on_point(config.LEVEL_UP_X, y + 45)
+            click_on_point(config.LEVEL_UP_X, y + config.LEVEL_UP_Y_OFFSET)
             self.level += 1
         if self.level >= self.level_ceiling and not self.skill_unlocked():
             self.raise_level_ceiling()
 
     def level_skill(self):
         x, y = self.name_pos
-        click_on_point(config.SKILL_X_COORDINATE + (config.SKILL_OFFSET * self.skill_level), y + 45)
+        click_on_point(config.SKILL_X + (config.SKILL_X_OFFSET * self.skill_level), y + config.SKILL_Y_OFFSET)
         self.skill_level += 1
         if self.level == self.level_ceiling:
             self.raise_level_ceiling()
@@ -243,6 +244,10 @@ class GameData:
 
     def move_up_level(self):
         self.level += 1
+        img = rnd.get_screenshot()
+        im = Image.fromarray(img)
+        name = "debug/" + str(self.ascensions) + "-" + str(self.level)
+        im.save(name)
         click_on_point(813, 85)
         if self.level % 5 == 0:
             print("  Game level: {} (BOSS)".format(self.level))
@@ -253,8 +258,11 @@ class GameData:
         if self.level > 50:
             x, y = find_bee()
             if x > 0:
+                move_to(x, y)
                 for _ in range(12):
-                    bee_clicker(x, y)
+                    auto_click(POINT_CHECK=False)
+                x, y = config.AC_POINT
+                move_to(x, y)
         if present_detection(self):
             click_on_point(953, 506)
             sleep(1/2)
@@ -418,13 +426,15 @@ def scroll_down(game):
     """
     if not game.boss_timer:
         img = rnd.get_screenshot()
-        if img[565, 501, 2] == 255:
+        if img[570, 478, 2] > 190:
             game.reset_hero_queue()
             reset_scroll()
         else:
+            move_to(465, 407)
             scroll_amount = round(-150 - 100/game.level)
             pyautogui.scroll(scroll_amount)
-            sleep(1/5)
+            x, y = config.AC_POINT
+            move_to(x, y)
 
 
 def reset_scroll():
@@ -432,32 +442,46 @@ def reset_scroll():
     Returns to the top of the heroes list in the game window
     """
     img = rnd.get_screenshot()
-    while not img[210, 513, 2] > 250:
+    move_to(465, 407)
+    while not img[250, 488, 2] > 250:
         pyautogui.scroll(2500)
         img = rnd.get_screenshot()
-    sleep(1/2)
+    x, y = config.AC_POINT
+    move_to(x, y)
 
 
-def bee_clicker(x, y):
-    mouse = pynput.mouse.Controller()
-    pyautogui.moveTo(x, y)
-    mouse.click(pynput.mouse.Button.left)
-    mouse.click(pynput.mouse.Button.left)
-    mouse.click(pynput.mouse.Button.left)
-    mouse.click(pynput.mouse.Button.left)
-    mouse.click(pynput.mouse.Button.left)
-
-
-def auto_click(WAIT=0):
+def auto_click(WAIT=1/2000, POINT_CHECK=True):
     """
-    *3x ClICKS* on the autoclicker point
+    *3x CLICKS* on the autoclicker point
+    :param POINT_CHECK: Flag for checking if cursor is in autoclick point area
     :param WAIT: wait time in seconds
     """
     mouse = pynput.mouse.Controller()
     x, y = pyautogui.position()
-    if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) & (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
-        mouse.click(pynput.mouse.Button.left)
-        mouse.click(pynput.mouse.Button.left)
-        mouse.click(pynput.mouse.Button.left)
-        if WAIT > 0:
+    if POINT_CHECK:
+        if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5)\
+                and (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
+            mouse.click(pynput.mouse.Button.left)
             sleep(WAIT)
+            mouse.click(pynput.mouse.Button.left)
+            sleep(WAIT)
+            mouse.click(pynput.mouse.Button.left)
+            sleep(WAIT)
+            mouse.click(pynput.mouse.Button.left)
+            sleep(WAIT)
+            mouse.click(pynput.mouse.Button.left)
+
+    else:
+        mouse.click(pynput.mouse.Button.left)
+        sleep(WAIT)
+        mouse.click(pynput.mouse.Button.left)
+        sleep(WAIT)
+        mouse.click(pynput.mouse.Button.left)
+        sleep(WAIT)
+        mouse.click(pynput.mouse.Button.left)
+        sleep(WAIT)
+        mouse.click(pynput.mouse.Button.left)
+
+
+def move_to(x, y):
+    pyautogui.moveTo(x, y)

@@ -1,8 +1,6 @@
 import config
 import config as cf
 import renderer as rnd
-import pyautogui
-import numpy as np
 
 
 def upgrade_first_levels(game):
@@ -12,8 +10,8 @@ def upgrade_first_levels(game):
     """
     hero = game.hero
     img = rnd.get_screenshot()
-    if img[235, cf.LEVEL_UP_X, 2] > 250:
-        hero.name_pos = (149, 190)
+    if img[275, cf.LEVEL_UP_X, 2] > 250:
+        hero.name_pos = (157, 235)
         hero.level_up()
 
 
@@ -22,16 +20,14 @@ def upgrade_normal(game, img):
     x, y = hero.name_pos
 
     if hero.skill_unlocked():
-        pixel_val = [img[y + 45, 197 + (cf.SKILL_OFFSET * hero.skill_level), i] for i in range(3)]
-        if max(pixel_val) > 50:
+        pixel_val = []
+        for i in range(3):
+            pixel_val.append(img[y + cf.SKILL_Y_OFFSET, cf.SKILL_X + (cf.SKILL_X_OFFSET * hero.skill_level), i])
+        if max(pixel_val) > 51:
             hero.level_skill()
 
-    elif img[y + 45, cf.LEVEL_UP_X, 2] > 200:  # 45px is offset from the top of the hero name to the upgrade button
-        if hero.skill_level < hero.max_skill_level:
-            hero.level_up()
-            game.update_hero_timer()
-
-        elif config.LEVEL_OVER_STEP > 25:
+    elif img[y + cf.LEVEL_UP_Y_OFFSET, cf.LEVEL_UP_X, 2] > 200:
+        if config.LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
             for x in range(41):
                 if img[y + 55, x + 92, 2] == 0:
                     hero.level_up(CTRL=True)
@@ -46,10 +42,10 @@ def upgrade_functions(game):
     Levels up hero if it's available or buys new skill if it's unlocked
     :param game: GameData class object
     """
-    if game.level < 3 and game.ascensions == 0:
+    if game.level < 3 and game.ascensions == 0 and game.hero_index == 0:
         upgrade_first_levels(game)
     else:
-        if game.hero.skill_level < game.hero.max_skill_level:
+        if game.hero.skill_level < game.hero.max_skill_level or config.LEVEL_OVER_STEP < 100:
             img = rnd.get_screenshot()
         else:
             img = rnd.get_screenshot(CTRL=True)
@@ -71,10 +67,11 @@ def hero_leveling_logic(game):
             # Should not be true under normal conditions
             while hero.level > hero.level_ceiling:
                 print("Manually raising level ceiling")
+                print(hero.level, ">", hero.level_ceiling)
                 hero.raise_level_ceiling()
 
-        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 110):
-            # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due low increases to he's dps
+        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
+            # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due to low increase to dps
             game.next_hero()
 
         else:

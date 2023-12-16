@@ -46,7 +46,8 @@ def game_loop(game):
             if LOGIC_RUNNING and not game.control_window.only_autoclicker:
                 game_functions(game)
             elif game.control_window.only_autoclicker:
-                util.auto_click(WAIT=1/20)
+                util.auto_click()
+                time.sleep(1/2000)
                 if DEBUG:
                     rnd.render()
     fh.save_data(game)
