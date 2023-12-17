@@ -27,7 +27,7 @@ ASCENSION_STEP = 43
 LEVEL_OVER_STEP = 25  # Step for leveling heroes over the guide
 GAME_NAME = 'Clicker Heroes'
 AC_POINT = (775, 365)  # Only point where autoclicker works
-NEW_GAME_LEVEL = [72, 122, 198]  # pixel values for new game level
+NEW_GAME_LEVEL = [171, 205, 195]  # pixel values for new game level at (x, y) == (812,47)
 LEVEL_UP_X = 157  # Level up button x-coordinate
 SKILL_X = 197  # Level up skill x-coordinate
 SKILL_X_OFFSET = 29  # Pixels between skill icons

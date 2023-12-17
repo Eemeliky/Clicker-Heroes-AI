@@ -214,7 +214,7 @@ class GameData:
             img = rnd.get_screenshot()
             if not self.boss_timer:
                 self.boss_timer = time()
-            elif (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
+            elif (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
                 print("BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
                 self.boss_timer = 0
                 self.move_up_level()
@@ -222,7 +222,7 @@ class GameData:
                 self.level -= 1
                 self.boss_timer = 0
                 self.grind_timer = time()
-                click_on_point(728, 82)
+                click_on_point(728, 65)
                 self.update_hero_timer()
                 print(f"GRINDING TIME! ({config.GRIND_TIME}s)")
         elif self.grind_timer:
@@ -239,16 +239,12 @@ class GameData:
                 self.ascend()
         else:
             img = rnd.get_screenshot()
-            if (img[85, 813, :] == np.array(config.NEW_GAME_LEVEL)).all():
+            if (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
                 self.move_up_level()
 
     def move_up_level(self):
         self.level += 1
-        img = rnd.get_screenshot()
-        im = Image.fromarray(img)
-        name = "debug/" + str(self.ascensions) + "-" + str(self.level)
-        im.save(name)
-        click_on_point(813, 85)
+        click_on_point(822, 65)
         if self.level % 5 == 0:
             print("  Game level: {} (BOSS)".format(self.level))
         else:
