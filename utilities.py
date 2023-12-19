@@ -77,17 +77,17 @@ class Hero(object):
     def level_up(self, CTRL=False):
         x, y = self.name_pos
         if CTRL:
-            click_on_point(config.LEVEL_UP_X, y + config.LEVEL_UP_Y_OFFSET, CTRL=CTRL)
+            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15, CTRL=CTRL)
             self.level += 100
         if not CTRL:
-            click_on_point(config.LEVEL_UP_X, y + config.LEVEL_UP_Y_OFFSET)
+            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15)
             self.level += 1
         if self.level >= self.level_ceiling and not self.skill_unlocked():
             self.raise_level_ceiling()
 
     def level_skill(self):
         x, y = self.name_pos
-        click_on_point(config.SKILL_X + (config.SKILL_X_OFFSET * self.skill_level), y + config.SKILL_Y_OFFSET)
+        click_on_point(config.SKILL_X + (config.SKILL_X_OFFSET * self.skill_level), y + config.SKILL_Y_OFFSET + 15)
         self.skill_level += 1
         if self.level == self.level_ceiling:
             self.raise_level_ceiling()
@@ -276,13 +276,13 @@ class GameData:
         self.boss_timer = 0
         self.grind_timer = 0
         self.unlocked_powers = 0
-        click_on_point(1000, 245, center=False)
+        click_on_point(997, 229, center=False)
         sleep(1/5)
         img = rnd.get_screenshot()
-        if (img[384, 485, :] == np.array([68, 215, 35])).all():
-            click_on_point(485, 384, center=False)
+        if (img[367, 451, :] == np.array([68, 215, 35])).all():
+            click_on_point(451, 367, center=False)
             sleep(1/5)
-        click_on_point(460, 450)
+        click_on_point(485, 386)
         sleep(1/5)
 
     def transcend(self):
@@ -344,6 +344,7 @@ def click_on_point(x, y, center=True, CTRL=False):
 
     if not CTRL:
         pyautogui.moveTo(x, y)
+        sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
         pyautogui.click()
 
     if center:

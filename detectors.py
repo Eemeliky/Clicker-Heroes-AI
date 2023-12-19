@@ -79,7 +79,7 @@ def find_bee():
     img = img[50:150, 590:960]
     results_img = cv2.matchTemplate(img, needle_img, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(results_img)
-    if max_val > 0.55:
+    if max_val > 0.9:
         if DEBUG:
             print('Bee found with confidence:', round(max_val, 4))
         x, _ = max_loc
