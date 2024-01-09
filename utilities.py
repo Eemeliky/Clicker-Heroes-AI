@@ -6,7 +6,6 @@ import pynput
 import numpy as np
 import renderer as rnd
 from detectors import present_detection, find_gilded, find_bee
-from PIL import Image
 
 
 class ControlWindow(object):
@@ -432,6 +431,7 @@ def scroll_down(game):
             pyautogui.scroll(scroll_amount)
             x, y = config.AC_POINT
             move_to(x, y)
+            sleep(1/2000)
 
 
 def reset_scroll():
@@ -441,10 +441,11 @@ def reset_scroll():
     img = rnd.get_screenshot()
     move_to(465, 407)
     while not img[250, 488, 2] > 250:
-        pyautogui.scroll(2500)
+        pyautogui.scroll(5000)
         img = rnd.get_screenshot()
     x, y = config.AC_POINT
     move_to(x, y)
+    sleep(1 / 2000)
 
 
 def auto_click(WAIT=1/2000, POINT_CHECK=True):

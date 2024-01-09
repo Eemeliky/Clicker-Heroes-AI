@@ -31,7 +31,7 @@ NEW_GAME_LEVEL = [171, 205, 195]  # pixel values for new game level at (x, y) ==
 LEVEL_UP_X = 157  # Level up button x-coordinate
 SKILL_X = 197  # Level up skill x-coordinate
 SKILL_X_OFFSET = 29  # Pixels between skill icons
-SKILL_Y_OFFSET = 40
+SKILL_Y_OFFSET = 41
 LEVEL_UP_Y_OFFSET = 15
 IMG_PATH = 'images/'
 SAVE_PATH = 'saves/'
