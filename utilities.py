@@ -350,6 +350,15 @@ def click_on_point(x, y, center=True, CTRL=False):
         pyautogui.moveTo(config.AC_POINT)
 
 
+def game_auto_clicker():
+    """
+    Setups the game's own autoclicker if it's bought
+    """
+    if config.NUMBER_OF_CLICKERS > 0:
+        for _ in range(config.NUMBER_OF_CLICKERS):
+            click_on_point(990, 338)
+
+
 def get_pixel_val(x=0, y=0):
     """
     :param x: x-coordinate on screen

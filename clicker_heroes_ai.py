@@ -36,6 +36,7 @@ def game_functions(game):
 
 def game_loop(game):
     print("SETUP DONE!")
+    util.game_auto_clicker()
     global LOGIC_RUNNING
     while game.control_window.running:
         game.control_window.root.update()

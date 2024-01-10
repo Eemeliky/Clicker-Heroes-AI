@@ -41,7 +41,7 @@ WINDOW_HEIGHT = 600  # Game window height
 GRIND_TIME = 300  # Time in seconds
 WAIT_TIME = 30
 DEBUG = True
-
+NUMBER_OF_CLICKERS = 2
 
 def set_level_guide(ascensions, transcends):
     global LEVEL_GUIDE
