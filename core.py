@@ -1,5 +1,6 @@
 import config
 import config as cf
+import detectors
 import renderer as rnd
 
 
@@ -18,13 +19,17 @@ def upgrade_first_levels(game):
 def upgrade_normal(game, img):
     hero = game.hero
     x, y = hero.name_pos
-
     if hero.skill_unlocked():
-        pixel_val = []
-        for i in range(3):
-            pixel_val.append(img[y + cf.SKILL_Y_OFFSET, cf.SKILL_X + (cf.SKILL_X_OFFSET * hero.skill_level), i])
-        if max(pixel_val) > 51:
-            hero.level_skill()
+        level = detectors.read_hero_level(game)
+        if level == hero.level or level == 0:
+            pixel_val = []
+            for i in range(3):
+                pixel_val.append(img[y + cf.SKILL_Y_OFFSET, cf.SKILL_X + (cf.SKILL_X_OFFSET * hero.skill_level), i])
+            if max(pixel_val) > 51:
+                hero.level_skill()
+        else:
+            print(f'Adjusting hero level to {level} from {hero.level}')
+            hero.level = level
 
     elif img[y + cf.LEVEL_UP_Y_OFFSET, cf.LEVEL_UP_X, 2] > 200:
         if config.LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
@@ -66,8 +71,6 @@ def hero_leveling_logic(game):
         if hero.level > hero.level_ceiling:
             # Should not be true under normal conditions
             while hero.level > hero.level_ceiling:
-                print("Manually raising level ceiling")
-                print(hero.level, ">", hero.level_ceiling)
                 hero.raise_level_ceiling()
 
         elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
