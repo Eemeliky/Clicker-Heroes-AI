@@ -8,7 +8,7 @@ from pynput.keyboard import Key, Controller
 import time
 
 
-def find_game_win():
+def find_game_win() -> None:
     """
     Finds the game window and returns it if it's found
     :return: Game window object
@@ -19,7 +19,7 @@ def find_game_win():
     return hwnd
 
 
-def move_game_win(hwnd):
+def move_game_win(hwnd) -> None:
     """
     Moves game window to the front so that it's visible
     :param hwnd: Game window object
@@ -28,12 +28,13 @@ def move_game_win(hwnd):
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
-def get_screenshot(BGR=False, CTRL=False):
+def get_screenshot(BGR=False, CTRL=False) -> np.ndarray:
     """
     Takes screenshot from the game window
-    :param CTRL:
-    :param BGR: boolean, returns the screenshot as BRG
-    :return: screenshot of the game as a numpy array (RGB)
+    :param CTRL: boolean, takes screenshot with key "ctrl" held down, Default = false
+    :param BGR: boolean, returns the screenshot as BRG instead of RGB, Default = false
+    :return: screenshot of the game as a numpy array,
+    Default = ndarray(RGB)
     """
     hwnd = win32gui.FindWindow(None, GAME_NAME)
     left, top, right, bot = win32gui.GetWindowRect(hwnd)
@@ -52,7 +53,7 @@ def get_screenshot(BGR=False, CTRL=False):
     return img_rgb
 
 
-def render(img=np.array([])):
+def render(img=np.array([])) -> None:
     """
     Resizes the image and renders it in a Render window next to the game window.
     :param img: Image to render as a numpy array (BGR)
