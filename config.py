@@ -35,13 +35,14 @@ SKILL_Y_OFFSET = 41
 LEVEL_UP_Y_OFFSET = 15
 IMG_PATH = 'images/'
 SAVE_PATH = 'saves/'
-CONFIDENCE_THRESHOLD = 0.7  # Threshold for the detection of heroes
+CONFIDENCE_THRESHOLD = 0.7  # Threshold for the detection (template matching)
 WINDOW_WIDTH = 1050  # Game window width
 WINDOW_HEIGHT = 600  # Game window height
 GRIND_TIME = 300  # Time in seconds
 WAIT_TIME = 30
 DEBUG = True
 NUMBER_OF_CLICKERS = 2
+
 
 def set_level_guide(ascensions, transcends):
     global LEVEL_GUIDE
