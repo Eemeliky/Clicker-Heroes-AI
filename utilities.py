@@ -1,4 +1,5 @@
 import pyautogui
+from typing import List
 import config
 import tkinter as tk
 from time import time, sleep
@@ -8,7 +9,7 @@ import renderer as rnd
 from detectors import present_detection, find_gilded, find_bee
 
 
-class ControlWindow(object):
+class ControlWindow:
     """
     Control panel for the program
     """
@@ -58,7 +59,7 @@ class ControlWindow(object):
         self.root.geometry('+{}+{}'.format(config.WINDOW_WIDTH, round(config.WINDOW_HEIGHT - 260)))
 
 
-class Hero(object):
+class Hero:
     """
     Class for Heroes and their attributes
     """
@@ -123,7 +124,7 @@ class Hero(object):
         self.gilded = True
 
 
-class Power(object):
+class Power:
     """
     Class for Powers and their attribute
     """
@@ -140,7 +141,7 @@ class Power(object):
     def unlock(self):
         self.unlocked = True
         print(self.name, "Unlocked")
-        if self.name == "The Dark Ritual":
+        if self.name == "The Dark Ritual":  # Instantly activate DR because it's passive power.
             self.activate()
 
     def activate(self):
@@ -153,10 +154,7 @@ class Power(object):
         self.cd_timer = 0
 
     def ready(self):
-        if (time() - self.cd_timer) > self.cooldown:
-            return True
-
-        return False
+        return (time() - self.cd_timer) > self.cooldown
 
 
 class GameData:
@@ -164,7 +162,8 @@ class GameData:
     Class for game variables
     """
 
-    def __init__(self, level, heroes, h_idx, powers, powers_num, ascension, transcend):
+    def __init__(self, level: int, heroes: List[Hero], h_idx: int,
+                 powers: List[Power], powers_num: int, ascension: int, transcend: int):
         self.heroes = heroes
         self.hero_index = h_idx
         self.hero = self.heroes[self.hero_index]
@@ -316,8 +315,8 @@ def chest_handler(game):
     click_on_point(523, 324, False)
     sleep(2)
     hero_idx = find_gilded(game)
-    if not hero_idx:
-        print("ERROR, no suitable hero found!")
+    if hero_idx < 0:
+        print("No suitable hero found! -> Gilding none")
     else:
         hero = game.heroes[hero_idx]
         if not hero.gilded:
@@ -363,7 +362,7 @@ def get_pixel_val(x=0, y=0):
     """
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
-    :return: Pixel value of given point or the point that the cursor points to
+    :return: Pixel value of given point(x,y). Else pixel value of the point of the cursor.
     """
     img = rnd.get_screenshot()
     if x == 0 and y == 0:
@@ -459,7 +458,7 @@ def reset_scroll():
 
 def auto_click(WAIT=1/2000, POINT_CHECK=True):
     """
-    *3x CLICKS* on the autoclicker point
+    *5x CLICKS* on the autoclicker point
     :param POINT_CHECK: Flag for checking if cursor is in autoclick point area
     :param WAIT: wait time in seconds
     """
