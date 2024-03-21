@@ -1,9 +1,7 @@
 import cv2
 import core
 import file_handler as fh
-import renderer as rnd
 import utilities as util
-import detectors as dts
 from pynput import keyboard
 import threading
 from config import DEBUG
@@ -28,7 +26,7 @@ def game_functions(game):
     game.check_level()
     core.power_use_logic(game)
     util.auto_click()
-    if dts.detect_hero(game):
+    if game.hero.found():
         core.hero_leveling_logic(game)
     else:
         util.scroll_down(game)
@@ -41,7 +39,7 @@ def game_loop(game):
     while game.control_window.running:
         game.control_window.root.update()
         game.control_window.logic = LOGIC_RUNNING
-        if not rnd.find_game_win():
+        if not util.rnd.find_game_win():
             break
         else:
             if LOGIC_RUNNING and not game.control_window.only_autoclicker:
@@ -50,16 +48,16 @@ def game_loop(game):
                 util.auto_click()
                 time.sleep(1/2000)
                 if DEBUG:
-                    rnd.render()
+                    util.rnd.render()
     fh.save_data(game)
 
 
 def setup():
     heroes, game_data, powers = fh.load_from_file()
-    game = util.create_game_data(heroes, game_data, powers)
-    hwnd = rnd.find_game_win()
+    game: util.GameData = util.create_game_data(heroes, game_data, powers)
+    hwnd = util.rnd.find_game_win()
     if heroes and hwnd:
-        rnd.move_game_win(hwnd)
+        util.rnd.move_game_win(hwnd)
         time.sleep(1)
         game.create_control_win()
         game_thread = threading.Thread(target=game_loop, args=(game, ), daemon=True)

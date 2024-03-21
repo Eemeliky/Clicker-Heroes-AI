@@ -1,17 +1,15 @@
-import config
-import config as cf
-import detectors
+from config import LEVEL_UP_X, SKILL_Y_OFFSET, SKILL_X, SKILL_X_OFFSET, LEVEL_UP_Y_OFFSET, LEVEL_OVER_STEP, WAIT_TIME
+from detectors import read_hero_level
 import renderer as rnd
 
 
-def upgrade_first_levels(game):
+def upgrade_first_levels(hero):
     """
     Upgrades first 2 levels when template matching doesn't work, because achievements block the hero name.
-    :param game: GameData class object
+    :param hero: Current hero from GameData
     """
-    hero = game.hero
     img = rnd.get_screenshot()
-    if img[275, cf.LEVEL_UP_X, 2] > 250:
+    if img[275, LEVEL_UP_X, 2] > 250:
         hero.name_pos = (157, 235)
         hero.level_up()
 
@@ -20,19 +18,19 @@ def upgrade_normal(game, img):
     hero = game.hero
     x, y = hero.name_pos
     if hero.skill_unlocked():
-        level = detectors.read_hero_level(game)
+        level = read_hero_level(y)
         if level == hero.level or level == 0:
             pixel_val = []
             for i in range(3):
-                pixel_val.append(img[y + cf.SKILL_Y_OFFSET, cf.SKILL_X + (cf.SKILL_X_OFFSET * hero.skill_level), i])
+                pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
             if max(pixel_val) > 51:
                 hero.level_skill()
         else:
             print(f'Adjusting hero level to {level} from {hero.level}')
             hero.level = level
 
-    elif img[y + cf.LEVEL_UP_Y_OFFSET, cf.LEVEL_UP_X, 2] > 200:
-        if config.LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
+    elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
+        if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
             for x in range(41):
                 if img[y + 55, x + 92, 2] == 0:
                     hero.level_up(CTRL=True)
@@ -48,9 +46,9 @@ def upgrade_functions(game):
     :param game: GameData class object
     """
     if game.level < 3 and game.ascensions == 0 and game.hero_index == 0:
-        upgrade_first_levels(game)
+        upgrade_first_levels(game.hero)
     else:
-        if game.hero.skill_level < game.hero.max_skill_level or config.LEVEL_OVER_STEP < 100:
+        if game.hero.skill_level < game.hero.max_skill_level or LEVEL_OVER_STEP < 100:
             img = rnd.get_screenshot()
         else:
             img = rnd.get_screenshot(CTRL=True)
@@ -61,7 +59,7 @@ def hero_leveling_logic(game):
     """
     Decides what action to do with the current hero
     :param game: GameData class object
-    :return:
+    :return: None
     """
     if game.level_up_timer == 0:
         game.update_hero_timer()
@@ -81,9 +79,8 @@ def hero_leveling_logic(game):
             lvl_clg = hero.level_ceiling
             upgrade_functions(game)
             timer = game.get_hero_timer()
-            if lvl_clg != hero.level_ceiling:
-                game.next_hero()
-            elif timer > cf.WAIT_TIME:
+            if lvl_clg != hero.level_ceiling or timer > WAIT_TIME:
+                hero.level = read_hero_level(hero.name_pos[1])
                 game.next_hero()
 
 

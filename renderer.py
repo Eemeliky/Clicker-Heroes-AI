@@ -8,7 +8,7 @@ from pynput.keyboard import Key, Controller
 import time
 
 
-def find_game_win() -> None:
+def find_game_win() -> int:
     """
     Finds the game window and returns it if it's found
     :return: Game window object
@@ -28,6 +28,7 @@ def move_game_win(hwnd) -> None:
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
+# TODO Fix ctrl screenshot
 def get_screenshot(BGR=False, CTRL=False) -> np.ndarray:
     """
     Takes screenshot from the game window

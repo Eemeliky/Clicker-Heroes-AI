@@ -5,8 +5,8 @@ import tkinter as tk
 from time import time, sleep
 import pynput
 import numpy as np
+import detectors as dts
 import renderer as rnd
-from detectors import present_detection, find_gilded, find_bee
 
 
 class ControlWindow:
@@ -122,6 +122,13 @@ class Hero:
 
     def gild(self):
         self.gilded = True
+
+    def found(self) -> bool:
+        (x, y) = dts.find_hero(self.name, self.gilded)
+        if x > 0:
+            self.name_pos = (x, y)
+            return True
+        return False
 
 
 class Power:
@@ -250,18 +257,25 @@ class GameData:
 
     def detections(self):
         if self.level > 50:
-            x, y = find_bee()
+            x, y = dts.find_bee()
             if x > 0:
                 move_to(x, y)
                 for _ in range(12):
                     auto_click(POINT_CHECK=False)
                 x, y = config.AC_POINT
                 move_to(x, y)
-        if present_detection(self):
+        if dts.present_detection(self.level):
             click_on_point(953, 506)
             sleep(1/2)
-            chest_handler(self)
+            idx = chest_handler(self.heroes)
+            if idx > 0:
+                self.heroes[idx].gild()
+            else:
+                print("No suitable hero found! -> Gilding none")
+            click_on_point(832, 120)
+            sleep(1 / 2)
 
+    # TODO Fix ascension clicking
     def ascend(self):
         self.ascensions += 1
         config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
@@ -307,22 +321,24 @@ class GameData:
         click_on_point(400, 470)
 
 
-def chest_handler(game):
+def chest_handler(heroes: List[Hero]) -> int:
     """
     Clicks on the chest that appears on the screen after opening present and calls for hero gilding.
-    :param game: GameData class object
+    :param heroes: List of heroes
+    :return index of the best match for gilding
     """
     click_on_point(523, 324, False)
     sleep(2)
-    hero_idx = find_gilded(game)
-    if hero_idx < 0:
-        print("No suitable hero found! -> Gilding none")
-    else:
-        hero = game.heroes[hero_idx]
-        if not hero.gilded:
-            hero.gild()
-    click_on_point(832, 120)
-    sleep(1/2)
+    img_n: np.ndarray = dts.get_chest_name_img()
+    conf_of_best: float = 0.0
+    idx_of_best: int = 0
+    for idx, hero in enumerate(heroes):
+        tmp_conf: float = dts.gilding_matching(img_n, hero.name)
+        if tmp_conf > 0.9:
+            return idx
+        if tmp_conf > conf_of_best and tmp_conf > config.CONFIDENCE_THRESHOLD:
+            idx_of_best = idx
+    return idx_of_best
 
 
 def click_on_point(x, y, center=True, CTRL=False):
