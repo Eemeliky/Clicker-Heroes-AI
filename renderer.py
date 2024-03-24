@@ -5,13 +5,13 @@ from config import WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME
 from numpy import array
 from PIL import ImageGrab
 from pynput.keyboard import Key, Controller
-import time
+from time import sleep
 
 
 def find_game_win() -> int:
     """
     Finds the game window and returns it if it's found
-    :return: Game window object
+    :return: Game window number
     """
     hwnd = win32gui.FindWindow(None, GAME_NAME)
     if not hwnd:
@@ -19,22 +19,21 @@ def find_game_win() -> int:
     return hwnd
 
 
-def move_game_win(hwnd) -> None:
+def move_game_win(hwnd: int) -> None:
     """
     Moves game window to the front so that it's visible
-    :param hwnd: Game window object
+    :param hwnd: Game window number
     """
     win32gui.SetForegroundWindow(hwnd)
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
-# TODO Fix ctrl screenshot
 def get_screenshot(BGR=False, CTRL=False) -> np.ndarray:
     """
     Takes screenshot from the game window
     :param CTRL: boolean, takes screenshot with key "ctrl" held down, Default = false
     :param BGR: boolean, returns the screenshot as BRG instead of RGB, Default = false
-    :return: screenshot of the game as a numpy array,
+    :return: screenshot of the game window as a numpy array,
     Default = ndarray(RGB)
     """
     hwnd = win32gui.FindWindow(None, GAME_NAME)
@@ -43,20 +42,18 @@ def get_screenshot(BGR=False, CTRL=False) -> np.ndarray:
     if CTRL:
         keyboard = Controller()
         with keyboard.pressed(Key.ctrl_l):
-            time.sleep(0.5)
-
-        img_rgb = array(ImageGrab.grab(bbox))  # noqa
+            sleep(0.5)
+            img_rgb = array(ImageGrab.grab(bbox))  # noqa
     else:
         img_rgb = array(ImageGrab.grab(bbox))  # noqa
         if BGR:
-            img_bgr = cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
-            return img_bgr
+            return cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
     return img_rgb
 
 
 def render(img=np.array([])) -> None:
     """
-    Resizes the image and renders it in a Render window next to the game window.
+    Resizes the image and renders it in render window next to the game window.
     :param img: Image to render as a numpy array (BGR)
     """
     if img.size == 0:
@@ -65,6 +62,6 @@ def render(img=np.array([])) -> None:
     small = cv2.resize(img_rgb, (0, 0), fx=0.5, fy=0.5)
     cv2.imshow("Render", small)
     hwnd = win32gui.FindWindow(None, 'Render')
-    win32gui.MoveWindow(hwnd, WINDOW_WIDTH, 0, round((WINDOW_WIDTH + 35) / 2), round((WINDOW_HEIGHT + 80) / 2),
-                        True)
+    win32gui.MoveWindow(hwnd, WINDOW_WIDTH, 0, round((WINDOW_WIDTH + 35) / 2),
+                        round((WINDOW_HEIGHT + 80) / 2), True)
     cv2.waitKey(1)
