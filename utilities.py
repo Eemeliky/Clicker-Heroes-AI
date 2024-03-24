@@ -2,7 +2,7 @@ import pyautogui
 from typing import List
 import config
 import tkinter as tk
-from time import time, sleep
+from time import time
 import pynput
 import numpy as np
 import detectors as dts
@@ -266,16 +266,15 @@ class GameData:
                 move_to(x, y)
         if dts.present_detection(self.level):
             click_on_point(953, 506)
-            sleep(1/2)
+            rnd.sleep(1/2)
             idx = chest_handler(self.heroes)
             if idx > 0:
                 self.heroes[idx].gild()
             else:
                 print("No suitable hero found! -> Gilding none")
             click_on_point(832, 120)
-            sleep(1 / 2)
+            rnd.sleep(1 / 2)
 
-    # TODO Fix ascension clicking
     def ascend(self):
         self.ascensions += 1
         config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
@@ -289,13 +288,15 @@ class GameData:
         self.grind_timer = 0
         self.unlocked_powers = 0
         click_on_point(997, 229, center=False)
-        sleep(1/5)
+        rnd.sleep(1/5)
         img = rnd.get_screenshot()
+        rnd.sleep(1/5)
         if (img[367, 451, :] == np.array([68, 215, 35])).all():
-            click_on_point(451, 367, center=False)
-            sleep(1/5)
+            click_on_point(445, 395, center=False)
+            rnd.sleep(1/5)
         click_on_point(485, 386)
-        sleep(1/5)
+        game_auto_clicker()
+        rnd.sleep(1/5)
 
     def transcend(self):
         print("Transcending..")
@@ -312,9 +313,9 @@ class GameData:
         self.grind_timer = 0
         self.unlocked_powers = 0
         click_on_point(490, 120, center=False)
-        sleep(1 / 2)
+        rnd.sleep(1/2)
         click_on_point(315, 235, center=False)
-        sleep(1 / 8)
+        rnd.sleep(1/8)
         img = rnd.get_screenshot()
         if img[525, 445, 0] > 100:
             click_on_point(445, 525, center=False)
@@ -328,7 +329,7 @@ def chest_handler(heroes: List[Hero]) -> int:
     :return index of the best match for gilding
     """
     click_on_point(523, 324, False)
-    sleep(2)
+    rnd.sleep(2)
     img_n: np.ndarray = dts.get_chest_name_img()
     conf_of_best: float = 0.0
     idx_of_best: int = 0
@@ -348,17 +349,15 @@ def click_on_point(x, y, center=True, CTRL=False):
     :param y: y-coordinate on screen
     :param center: flag for returning to autoclicker point
     """
+    pyautogui.moveTo(x, y)
     if CTRL:
-        pyautogui.moveTo(x, y)
-        pyautogui.keyDown("ctrlleft")
-        sleep(1/10)
-        pyautogui.mouseDown()
-        pyautogui.mouseUp()
-        pyautogui.keyUp("ctrlleft")
+        keyboard = rnd.Controller()
+        with keyboard.pressed(rnd.Key.ctrl_l):
+            rnd.sleep(1/10)
+            pyautogui.click()
 
     if not CTRL:
-        pyautogui.moveTo(x, y)
-        sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
+        rnd.sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
         pyautogui.click()
 
     if center:
@@ -455,7 +454,7 @@ def scroll_down(game):
             pyautogui.scroll(scroll_amount)
             x, y = config.AC_POINT
             move_to(x, y)
-            sleep(1/2000)
+            rnd.sleep(1/2000)
 
 
 def reset_scroll():
@@ -469,7 +468,7 @@ def reset_scroll():
         img = rnd.get_screenshot()
     x, y = config.AC_POINT
     move_to(x, y)
-    sleep(1 / 2000)
+    rnd.sleep(1 / 2000)
 
 
 def auto_click(WAIT=1/2000, POINT_CHECK=True):
@@ -481,28 +480,19 @@ def auto_click(WAIT=1/2000, POINT_CHECK=True):
     mouse = pynput.mouse.Controller()
     x, y = pyautogui.position()
     if POINT_CHECK:
-        if (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5)\
-                and (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
-            mouse.click(pynput.mouse.Button.left)
-            sleep(WAIT)
-            mouse.click(pynput.mouse.Button.left)
-            sleep(WAIT)
-            mouse.click(pynput.mouse.Button.left)
-            sleep(WAIT)
-            mouse.click(pynput.mouse.Button.left)
-            sleep(WAIT)
-            mouse.click(pynput.mouse.Button.left)
+        if not (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) or \
+                not (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
+            return
 
-    else:
-        mouse.click(pynput.mouse.Button.left)
-        sleep(WAIT)
-        mouse.click(pynput.mouse.Button.left)
-        sleep(WAIT)
-        mouse.click(pynput.mouse.Button.left)
-        sleep(WAIT)
-        mouse.click(pynput.mouse.Button.left)
-        sleep(WAIT)
-        mouse.click(pynput.mouse.Button.left)
+    mouse.click(pynput.mouse.Button.left)
+    rnd.sleep(WAIT)
+    mouse.click(pynput.mouse.Button.left)
+    rnd.sleep(WAIT)
+    mouse.click(pynput.mouse.Button.left)
+    rnd.sleep(WAIT)
+    mouse.click(pynput.mouse.Button.left)
+    rnd.sleep(WAIT)
+    mouse.click(pynput.mouse.Button.left)
 
 
 def move_to(x, y):
