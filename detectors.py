@@ -118,30 +118,31 @@ def read_hero_level(hero_name_y: int) -> int:
     img_crop: np.ndarray = img[hero_name_y + 12: hero_name_y + 32, 200:400]
     confidence, (x, y) = template_matching(needle_img, img_crop)
     img_crop = img_crop[:, x+width:]
-    for _ in range(25):
-        best_guess: List[int] = [200, -1]
-        best_confidence: float = 0.0
-        tmp_max_conf: float = 1.0
-        step: int = 12
-        for num in range(10):
-            image_name = IMG_PATH + 'numbers/' + 'num_' + str(num) + '.png'
-            needle_img = cv2.imread(image_name, 0)
-            width = needle_img.shape[1]
-            results: np.ndarray = cv2.matchTemplate(img_crop, needle_img, cv2.TM_CCOEFF_NORMED)
-            _, max_conf, _, _ = cv2.minMaxLoc(results)
-            if max_conf > tmp_max_conf or num == 0:
-                tmp_max_conf = max_conf
-            locations = np.where(results > CONFIDENCE_THRESHOLD)
-            for point in zip(*locations[::-1]):
-                if point[0] < best_guess[0] or (point[0] == best_guess[0] and max_conf > best_confidence):
-                    best_guess[0] = point[0]
-                    best_guess[1] = num
-                    step = width
-                    best_confidence = max_conf
-        if tmp_max_conf < 0.5:
-            break
-        numbers += str((best_guess[1]))
-        img_crop = img_crop[:, best_guess[0] + step:]
-    if len(numbers) > 0:
-        return int(numbers)
+    if confidence > CONFIDENCE_THRESHOLD:
+        for _ in range(25):
+            best_guess: List[int] = [200, -1]
+            best_confidence: float = 0.0
+            tmp_max_conf: float = 0.0
+            step: int = 12
+            for num in range(10):
+                image_name = IMG_PATH + 'numbers/' + 'num_' + str(num) + '.png'
+                needle_img = cv2.imread(image_name, 0)
+                width = needle_img.shape[1]
+                results: np.ndarray = cv2.matchTemplate(img_crop, needle_img, cv2.TM_CCOEFF_NORMED)
+                _, max_conf, _, _ = cv2.minMaxLoc(results)
+                if max_conf > tmp_max_conf:
+                    tmp_max_conf = max_conf
+                locations = np.where(results > CONFIDENCE_THRESHOLD)
+                for point in zip(*locations[::-1]):
+                    if point[0] < best_guess[0] or (point[0] == best_guess[0] and max_conf > best_confidence):
+                        best_guess[0] = point[0]
+                        best_guess[1] = num
+                        step = width
+                        best_confidence = max_conf
+            if tmp_max_conf < 0.5 or img_crop.shape[1] < 11:
+                break
+            numbers += str((best_guess[1]))
+            img_crop = img_crop[:, best_guess[0] + step:]
+        if len(numbers) > 0:
+            return int(numbers)
     return 0
