@@ -15,6 +15,12 @@ def upgrade_first_levels(hero):
 
 
 def upgrade_normal(game, img):
+    """
+    Function that decides hero level ups and skill level ups, depending on the hero information.
+    :param game: GameData class object
+    :param img: Screenshot of the game window
+    :return:
+    """
     hero = game.hero
     x, y = hero.name_pos
     if hero.skill_unlocked():
@@ -31,10 +37,8 @@ def upgrade_normal(game, img):
 
     elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
         if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
-            for x in range(41):
-                if img[y + 55, x + 92, 2] == 0:
-                    hero.level_up(CTRL=True)
-                    break
+            if rnd.np.max(img[y + 43, 125:165, 0]) < 255:
+                hero.level_up(CTRL=True)
         else:
             hero.level_up()
             game.update_hero_timer()
@@ -80,8 +84,8 @@ def hero_leveling_logic(game):
             upgrade_functions(game)
             timer = game.get_hero_timer()
             if lvl_clg != hero.level_ceiling or timer > WAIT_TIME:
-                hero.level = read_hero_level(hero.name_pos[1])
                 game.next_hero()
+                hero.level = read_hero_level(hero.name_pos[1])
 
 
 def loop_basic_powers(game):
