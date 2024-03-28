@@ -24,16 +24,16 @@ def upgrade_normal(game, img):
     hero = game.hero
     x, y = hero.name_pos
     if hero.skill_unlocked():
-        level = read_hero_level(y)
-        if level == hero.level or level == 0:
+        r_level = read_hero_level(y)
+        if r_level == hero.level or r_level == 0:
             pixel_val = []
             for i in range(3):
                 pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
-            if max(pixel_val) > 51:
+            if max(pixel_val) > 50:
                 hero.level_skill()
         else:
-            print(f'Adjusting hero level to {level} from {hero.level}')
-            hero.level = level
+            print(f'Adjusting hero level to {r_level}')
+            hero.level = r_level
 
     elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
         if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
@@ -41,6 +41,11 @@ def upgrade_normal(game, img):
                 hero.level_up(CTRL=True)
         else:
             hero.level_up()
+            if hero.level % 5 == 0:
+                r_level = read_hero_level(hero.name_pos[1])
+                if r_level > 0:
+                    print(f'Adjusting hero level to {r_level}')
+                    hero.level = r_level
             game.update_hero_timer()
 
 
@@ -85,7 +90,6 @@ def hero_leveling_logic(game):
             timer = game.get_hero_timer()
             if lvl_clg != hero.level_ceiling or timer > WAIT_TIME:
                 game.next_hero()
-                hero.level = read_hero_level(hero.name_pos[1])
 
 
 def loop_basic_powers(game):
