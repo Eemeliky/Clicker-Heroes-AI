@@ -209,51 +209,71 @@ class GameData:
     def get_hero_timer(self):
         return time() - self.level_up_timer
 
-    def check_level(self):
+    def reset(self) -> bool:
+        amenhotep = self.heroes[18]
         if self.level == 1 and self.ascensions > 4:
+            print("Transcending..")
             print()
             print()
             print(f"  {self.transcends}. Transcend")
             self.transcend()
-        elif self.level % 5 == 0:
-            img = rnd.get_screenshot()
-            if not self.boss_timer:
-                self.boss_timer = time()
-            elif (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
-                print("BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
-                self.boss_timer = 0
-                self.move_up_level()
-            elif (time() - self.boss_timer) > 30:
-                self.level -= 1
-                self.boss_timer = 0
-                self.grind_timer = time()
-                click_on_point(728, 65)
-                self.update_hero_timer()
-                print(f"GRINDING TIME! ({config.GRIND_TIME}s)")
-        elif self.grind_timer:
-            amenhotep = self.heroes[18]
-            if (time() - self.grind_timer) > config.GRIND_TIME:
-                self.grind_timer = 0
-                self.move_up_level()
-                print("GRIND ENDED!")
-            elif amenhotep.level >= 150 and self.level > (130 + (config.ASCENSION_STEP * self.ascensions)):
+            return True
+        if self.grind_timer:
+            if amenhotep.level >= 150 and self.level > (130 + (config.ASCENSION_STEP * self.ascensions)):
                 print("Ascending..")
                 print()
                 print()
                 print(f"{self.ascensions}. Ascension")
                 self.ascend()
-        else:
-            img = rnd.get_screenshot()
-            if (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
-                self.move_up_level()
+                return True
+        return False
+
+    def boss_level_checks(self):
+        img = rnd.get_screenshot()
+        if (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
+            print("  BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
+            self.boss_timer = 0
+            self.move_up_level()
+
+        elif (time() - self.boss_timer) > 30:
+            self.level -= 1
+            self.boss_timer = 0
+            self.grind_timer = time()
+            click_on_point(728, 65)
+            self.update_hero_timer()
+            print(f"  GRINDING TIME! ({config.GRIND_TIME}s)")
+
+    def level_checks(self):
+        if self.reset():
+            return
+
+        if self.level % 5 == 0:
+            self.boss_level_checks()
+            return
+
+        if self.grind_timer and (time() - self.grind_timer) > config.GRIND_TIME:
+            self.grind_timer = 0
+            self.move_up_level()
+            print("  GRIND ENDED!")
+            return
+
+        img = rnd.get_screenshot()
+        if not self.grind_timer and (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
+            self.move_up_level()
 
     def move_up_level(self):
         self.level += 1
         click_on_point(822, 65)
+        if self.level % 33 == 0 and self.level % 10 != 0:
+            read_level = dts.read_game_level(str(self.level))
+            if read_level > 0 and read_level != self.level:
+                self.level = read_level
+                print(f"Sync'd game level to {self.level}")
         if self.level % 5 == 0:
-            print("  Game level: {} (BOSS)".format(self.level))
+            print(f"  Game level: {self.level} (BOSS)")
+            self.boss_timer = time()
         else:
-            print("  Game level: {}".format(self.level))
+            print(f"  Game level: {self.level}")
 
     def detections(self):
         if self.level > 50:
