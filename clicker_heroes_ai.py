@@ -23,7 +23,7 @@ def on_release(key):
 
 def game_functions(game):
     game.detections()
-    game.check_level()
+    game.level_checks()
     core.power_use_logic(game)
     util.auto_click()
     if game.hero.found():
@@ -33,9 +33,9 @@ def game_functions(game):
 
 
 def game_loop(game):
-    print("SETUP DONE!")
     util.game_auto_clicker()
     global LOGIC_RUNNING
+    print("SETUP DONE!")
     while game.control_window.running:
         game.control_window.root.update()
         game.control_window.logic = LOGIC_RUNNING
