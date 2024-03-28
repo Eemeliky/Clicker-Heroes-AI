@@ -146,3 +146,59 @@ def read_hero_level(hero_name_y: int) -> int:
         if len(numbers) > 0:
             return int(numbers)
     return 0
+
+
+def read_game_level(level_string: str) -> int:
+    """
+    Function to read game level from the screenshot of the game window. Helps to error correct unregistered clicks.
+    :param level_string: current saved game level as string
+    :return: current game level read form the game screen
+    """
+    numbers: str = ""
+    img: np.ndarray = get_screenshot(True)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    image_name: str = IMG_PATH + 'numbers/' + 'lvl_game.png'
+    needle_img: np.ndarray = cv2.imread(image_name, 0)
+    width: int = needle_img.shape[1]
+    img_crop: np.ndarray = img[100: 117, 675:895]
+    confidence, (x, y) = template_matching(needle_img, img_crop)
+    img_crop = img_crop[:, x+width:]
+    if confidence > 0.5:
+        for mag in range(len(level_string) + 1):
+            best_guess: List[int] = [200, -1]
+            best_confidence: float = 0.0
+            ties: List[str] = []
+            step: int = 12
+            for num in range(10):
+                image_name = IMG_PATH + 'numbers/' + 'gnum_' + str(num) + '.png'
+                needle_img = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
+                width = needle_img.shape[1]
+                if img_crop.shape[1] < width:
+                    break
+                results: np.ndarray = cv2.matchTemplate(img_crop, needle_img, cv2.TM_CCOEFF_NORMED)
+                _, max_conf, _, _ = cv2.minMaxLoc(results)
+                locations: np.ndarray = np.where(results > 0.67)
+                for point in zip(*locations[::-1]):
+                    if point[0] < best_guess[0] or (point[0] == best_guess[0] and max_conf > best_confidence):
+                        best_guess[0] = point[0]
+                        best_guess[1] = num
+                        step = width
+                        best_confidence = max_conf
+                    elif point[0] == best_guess[0] and max_conf - best_confidence < 0.1 and best_guess[1] != num:
+                        ties.append(str(num))
+            if best_confidence < 0.6:
+                if len(numbers) > 0:
+                    return int(numbers)
+            else:
+                match: bool = False
+                if ties:
+                    for tie in ties:
+                        if tie == level_string[mag]:
+                            numbers += str(tie)
+                            match = True
+                    if not match:
+                        numbers += str((best_guess[1]))
+                else:
+                    numbers += str((best_guess[1]))
+            img_crop = img_crop[:, best_guess[0] + step:]
+        return 0
