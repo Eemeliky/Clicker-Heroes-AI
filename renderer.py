@@ -1,3 +1,4 @@
+from typing import List
 import cv2
 import numpy as np
 import win32gui
@@ -13,7 +14,7 @@ def find_game_win() -> int:
     Finds the game window and returns it if it's found
     :return: Game window number
     """
-    hwnd = win32gui.FindWindow(None, GAME_NAME)
+    hwnd: int = win32gui.FindWindow(None, GAME_NAME)
     if not hwnd:
         print(f"Game window '{GAME_NAME}' not found!")
     return hwnd
@@ -36,32 +37,32 @@ def get_screenshot(BGR=False, CTRL=False) -> np.ndarray:
     :return: screenshot of the game window as a numpy array,
     Default = ndarray(RGB)
     """
-    hwnd = win32gui.FindWindow(None, GAME_NAME)
+    hwnd: int = win32gui.FindWindow(None, GAME_NAME)
     left, top, right, bot = win32gui.GetWindowRect(hwnd)
-    bbox = [left, top, right, bot]
+    bbox: List[int] = [left, top, right, bot]
     if CTRL:
-        keyboard = Controller()
+        keyboard: Controller = Controller()
         with keyboard.pressed(Key.ctrl_l):
             sleep(0.5)
-            img_rgb = array(ImageGrab.grab(bbox))  # noqa
+            img_rgb: np.ndarray = array(ImageGrab.grab(bbox=bbox))  # noqa
     else:
-        img_rgb = array(ImageGrab.grab(bbox))  # noqa
+        img_rgb: np.ndarray = array(ImageGrab.grab(bbox=bbox))  # noqa
         if BGR:
             return cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
     return img_rgb
 
 
-def render(img=np.array([])) -> None:
+def render(img: np.array = None) -> None:
     """
     Resizes the image and renders it in render window next to the game window.
     :param img: Image to render as a numpy array (BGR)
     """
-    if img.size == 0:
+    if img.shape[0] == 0:
         img = get_screenshot()
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    small = cv2.resize(img_rgb, (0, 0), fx=0.5, fy=0.5)
+    img_rgb: np.ndarray = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    small: np.ndarray = cv2.resize(img_rgb, (0, 0), fx=0.5, fy=0.5)
     cv2.imshow("Render", small)
-    hwnd = win32gui.FindWindow(None, 'Render')
+    hwnd: int = win32gui.FindWindow(None, 'Render')
     win32gui.MoveWindow(hwnd, WINDOW_WIDTH, 0, round((WINDOW_WIDTH + 35) / 2),
                         round((WINDOW_HEIGHT + 80) / 2), True)
     cv2.waitKey(1)
