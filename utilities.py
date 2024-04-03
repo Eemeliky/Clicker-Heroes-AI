@@ -1,5 +1,5 @@
 import pyautogui
-from typing import List
+from typing import List, Tuple, Dict, Any
 import config
 import tkinter as tk
 from time import time
@@ -64,7 +64,8 @@ class Hero:
     Class for Heroes and their attributes
     """
 
-    def __init__(self, name, level, level_ceiling, skill_level, max_skill_level, gilded, unique_ups):
+    def __init__(self, name: str, level: int, level_ceiling: int, skill_level: int, max_skill_level: int,
+                 gilded: bool, unique_ups: bool):
         self.name = name
         self.level = level
         self.skill_level = skill_level  # Current skill level
@@ -136,7 +137,7 @@ class Power:
     Class for Powers and their attribute
     """
 
-    def __init__(self, name, cooldown, key, state, hero, skill):
+    def __init__(self, name: str, cooldown: int, key: str, state: bool, hero: str, skill: int):
         self.name = name
         self.unlocked = state
         self.cooldown = cooldown
@@ -177,22 +178,19 @@ class GameData:
         self.powers = powers
         self.unlocked_powers = powers_num
         self.level = level
-        self.control_window = None
+        self.control_window = ControlWindow()
         self.ascensions = ascension
         self.transcends = transcend
-        self.boss_timer = 0
-        self.grind_timer = 0
-        self.level_up_timer = 0
+        self.boss_timer = 0.0
+        self.grind_timer = 0.0
+        self.level_up_timer = 0.0
 
-    def create_control_win(self):
-        self.control_window = ControlWindow()
-
-    def reset_hero_queue(self):
+    def reset_hero_queue(self) -> None:
         self.hero_index = 0
         self.hero = self.heroes[self.hero_index]
         self.update_hero_timer()
 
-    def next_hero(self):
+    def next_hero(self) -> None:
         if self.hero_index == 0 and self.hero.level >= 100:
             print("Skipping Cid")
         else:
@@ -203,14 +201,14 @@ class GameData:
         self.hero = self.heroes[self.hero_index]
         self.update_hero_timer()
 
-    def update_hero_timer(self):
+    def update_hero_timer(self) -> None:
         self.level_up_timer = time()
 
-    def get_hero_timer(self):
+    def get_hero_timer(self) -> float:
         return time() - self.level_up_timer
 
     def reset(self) -> bool:
-        amenhotep = self.heroes[18]
+        amenhotep: Hero = self.heroes[18]
         if self.level == 1 and self.ascensions > 4:
             print("Transcending..")
             print()
@@ -228,22 +226,22 @@ class GameData:
                 return True
         return False
 
-    def boss_level_checks(self):
-        img = rnd.get_screenshot()
+    def boss_level_checks(self) -> None:
+        img: np.ndarray = rnd.get_screenshot()
         if (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
             print("  BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
-            self.boss_timer = 0
+            self.boss_timer = 0.0
             self.move_up_level()
 
         elif (time() - self.boss_timer) > 30:
             self.level -= 1
-            self.boss_timer = 0
+            self.boss_timer = 0.0
             self.grind_timer = time()
             click_on_point(728, 65)
             self.update_hero_timer()
             print(f"  GRINDING TIME! ({config.GRIND_TIME}s)")
 
-    def level_checks(self):
+    def level_checks(self) -> None:
         if self.reset():
             return
 
@@ -252,7 +250,7 @@ class GameData:
             return
 
         if self.grind_timer and (time() - self.grind_timer) > config.GRIND_TIME:
-            self.grind_timer = 0
+            self.grind_timer = 0.0
             self.move_up_level()
             print("  GRIND ENDED!")
             return
@@ -261,7 +259,7 @@ class GameData:
         if not self.grind_timer and (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
             self.move_up_level()
 
-    def move_up_level(self):
+    def move_up_level(self) -> None:
         self.level += 1
         click_on_point(822, 65)
         if self.level % 33 == 0 and self.level % 10 != 0:
@@ -275,7 +273,7 @@ class GameData:
         else:
             print(f"  Game level: {self.level}")
 
-    def detections(self):
+    def detections(self) -> None:
         if self.level > 50:
             x, y = dts.find_bee()
             if x > 0:
@@ -286,8 +284,8 @@ class GameData:
                 move_to(x, y)
         if dts.present_detection(self.level):
             click_on_point(953, 506)
-            rnd.sleep(1/2)
-            idx = chest_handler(self.heroes)
+            rnd.sleep(1 / 2)
+            idx: int = chest_handler(self.heroes)
             if idx > 0:
                 self.heroes[idx].gild()
             else:
@@ -295,7 +293,7 @@ class GameData:
             click_on_point(832, 120)
             rnd.sleep(1 / 2)
 
-    def ascend(self):
+    def ascend(self) -> None:
         self.ascensions += 1
         config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
         for hero in self.heroes:
@@ -304,21 +302,23 @@ class GameData:
             power.reset()
         self.reset_hero_queue()
         self.level = 1
-        self.boss_timer = 0
-        self.grind_timer = 0
+        self.boss_timer = 0.0
+        self.grind_timer = 0.0
         self.unlocked_powers = 0
         click_on_point(997, 229, center=False)
-        rnd.sleep(1/5)
+        rnd.sleep(1/2)
         img = rnd.get_screenshot()
-        rnd.sleep(1/5)
-        if (img[367, 451, :] == np.array([68, 215, 35])).all():
-            click_on_point(445, 395, center=False)
-            rnd.sleep(1/5)
+        rnd.sleep(1/2)
+        if (img[367, 451, :] == np.array([69, 215, 35])).all():
+            click_on_point(451, 367, center=False)
+            rnd.sleep(1/2)
         click_on_point(485, 386)
+        rnd.sleep(1)
         game_auto_clicker()
-        rnd.sleep(1/5)
+        rnd.sleep(1 / 5)
 
-    def transcend(self):
+# TODO: probably broken
+    def transcend(self) -> None:
         print("Transcending..")
         self.transcends += 1
         self.ascensions = 0
@@ -329,13 +329,13 @@ class GameData:
             power.reset()
         self.reset_hero_queue()
         self.level = 1
-        self.boss_timer = 0
-        self.grind_timer = 0
+        self.boss_timer = 0.0
+        self.grind_timer = 0.0
         self.unlocked_powers = 0
         click_on_point(490, 120, center=False)
-        rnd.sleep(1/2)
+        rnd.sleep(1 / 2)
         click_on_point(315, 235, center=False)
-        rnd.sleep(1/8)
+        rnd.sleep(1 / 8)
         img = rnd.get_screenshot()
         if img[525, 445, 0] > 100:
             click_on_point(445, 525, center=False)
@@ -362,7 +362,7 @@ def chest_handler(heroes: List[Hero]) -> int:
     return idx_of_best
 
 
-def click_on_point(x, y, center=True, CTRL=False):
+def click_on_point(x: int, y: int, center=True, CTRL=False) -> None:
     """
     :param CTRL: flag for control click
     :param x: x-coordinate on screen
@@ -371,20 +371,20 @@ def click_on_point(x, y, center=True, CTRL=False):
     """
     pyautogui.moveTo(x, y)
     if CTRL:
-        keyboard = rnd.Controller()
+        keyboard: rnd.Controller = rnd.Controller()
         with keyboard.pressed(rnd.Key.ctrl_l):
-            rnd.sleep(1/10)
+            rnd.sleep(1 / 10)
             pyautogui.click()
 
     if not CTRL:
-        rnd.sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
+        rnd.sleep(1 / 2000)  # Extra wait because the game is not fast enough to register cursor movement
         pyautogui.click()
 
     if center:
         pyautogui.moveTo(config.AC_POINT)
 
 
-def game_auto_clicker():
+def game_auto_clicker() -> None:
     """
     Setups the game's own autoclicker if it's bought
     """
@@ -393,95 +393,95 @@ def game_auto_clicker():
             click_on_point(990, 338)
 
 
-def get_pixel_val(x=0, y=0):
+def get_pixel_val(x: int = 0, y: int = 0) -> np.ndarray:
     """
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
     :return: Pixel value of given point(x,y). Else pixel value of the point of the cursor.
     """
-    img = rnd.get_screenshot()
+    img: np.ndarray = rnd.get_screenshot()
     if x == 0 and y == 0:
         x, y = pyautogui.position()
     return img[y, x, :]
 
 
-def get_position():
+def get_position() -> Tuple[int, int]:
     x, y = pyautogui.position()
     return x, y
 
 
-def create_game_data(h_data, g_data, p_data):
+def create_game_data(h_data: Dict[str, Dict], g_data: Dict[str, Any], p_data: Dict[str, Dict]) -> GameData:
     """
     :param h_data: Dict with heroes data
     :param g_data: Dict with game data
     :param p_data: Dict with powers data
     :return: GameData class object
     """
-    h_tmp = []
-    p_tmp = []
-    h_idx = 0
-    powers_num = 0
+    h_tmp: List[Hero] = []
+    p_tmp: List[Power] = []
+    h_idx: int = 0
+    powers_num: int = 0
     for name in h_data:
-        new_hero = Hero(name,
-                        h_data[name]["Level"],
-                        h_data[name]["Level ceiling"],
-                        h_data[name]["Skill level"],
-                        h_data[name]["Max skill level"],
-                        h_data[name]["Gilded"],
-                        h_data[name]["Unique skills"]
-                        )
+        new_hero: Hero = Hero(name,
+                              h_data[name]["Level"],
+                              h_data[name]["Level ceiling"],
+                              h_data[name]["Skill level"],
+                              h_data[name]["Max skill level"],
+                              h_data[name]["Gilded"],
+                              h_data[name]["Unique skills"]
+                              )
         h_tmp.append(new_hero)
         if g_data["Current hero"] == new_hero.name:
             h_idx = len(h_tmp) - 1
 
     for name in p_data:
-        new_power = Power(name,
-                          p_data[name]["Cooldown"],
-                          p_data[name]["Key"],
-                          p_data[name]["Unlocked"],
-                          p_data[name]["Unlock hero"],
-                          p_data[name]["Unlock skill"],
-                          )
+        new_power: Power = Power(name,
+                                 p_data[name]["Cooldown"],
+                                 p_data[name]["Key"],
+                                 p_data[name]["Unlocked"],
+                                 p_data[name]["Unlock hero"],
+                                 p_data[name]["Unlock skill"],
+                                 )
         if new_power.unlocked:
             powers_num += 1
         p_tmp.append(new_power)
 
-    game = GameData(g_data["Level"],
-                    h_tmp,
-                    h_idx,
-                    p_tmp,
-                    powers_num,
-                    g_data["Ascension level"],
-                    g_data["Transcend level"],
-                    )
+    game: GameData = GameData(g_data["Level"],
+                              h_tmp,
+                              h_idx,
+                              p_tmp,
+                              powers_num,
+                              g_data["Ascension level"],
+                              g_data["Transcend level"],
+                              )
     config.set_level_guide(ascensions=game.ascensions, transcends=game.transcends)
     return game
 
 
-def scroll_down(game):
+def scroll_down(game: GameData) -> None:
     """
     Scrolls down on the heroes list in the game window
     :param game: GameData class object
     """
     if not game.boss_timer:
-        img = rnd.get_screenshot()
+        img: np.ndarray = rnd.get_screenshot()
         if img[570, 478, 2] > 190:
             game.reset_hero_queue()
             reset_scroll()
         else:
             move_to(465, 407)
-            scroll_amount = round(-150 - 100/game.level)
+            scroll_amount: int = round(-150 - 100 / game.level)
             pyautogui.scroll(scroll_amount)
             x, y = config.AC_POINT
             move_to(x, y)
-            rnd.sleep(1/2000)
+            rnd.sleep(1 / 2000)
 
 
-def reset_scroll():
+def reset_scroll() -> None:
     """
     Returns to the top of the heroes list in the game window
     """
-    img = rnd.get_screenshot()
+    img: np.ndarray = rnd.get_screenshot()
     move_to(465, 407)
     while not img[250, 488, 2] > 250:
         pyautogui.scroll(5000)
@@ -491,13 +491,13 @@ def reset_scroll():
     rnd.sleep(1 / 2000)
 
 
-def auto_click(WAIT=1/2000, POINT_CHECK=True):
+def auto_click(WAIT: float = 1/2000, POINT_CHECK=True) -> None:
     """
     *5x CLICKS* on the autoclicker point
     :param POINT_CHECK: Flag for checking if cursor is in autoclick point area
     :param WAIT: wait time in seconds
     """
-    mouse = pynput.mouse.Controller()
+    mouse: pynput.mouse.Controller = pynput.mouse.Controller()
     x, y = pyautogui.position()
     if POINT_CHECK:
         if not (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) or \
@@ -515,5 +515,5 @@ def auto_click(WAIT=1/2000, POINT_CHECK=True):
     mouse.click(pynput.mouse.Button.left)
 
 
-def move_to(x, y):
+def move_to(x: int, y: int) -> None:
     pyautogui.moveTo(x, y)
