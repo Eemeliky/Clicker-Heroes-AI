@@ -54,12 +54,11 @@ def game_loop(game):
 
 def setup():
     heroes, game_data, powers = fh.load_from_file()
-    game: util.GameData = util.create_game_data(heroes, game_data, powers)
-    hwnd = util.rnd.find_game_win()
+    hwnd: int = util.rnd.find_game_win()
     if heroes and hwnd:
+        game: util.GameData = util.create_game_data(heroes, game_data, powers)
         util.rnd.move_game_win(hwnd)
         time.sleep(1)
-        game.create_control_win()
         game_thread = threading.Thread(target=game_loop, args=(game, ), daemon=True)
         listener = keyboard.Listener(on_release=on_release)
         listener.start()
@@ -72,7 +71,7 @@ def setup():
 def main():
     setup()
     cv2.destroyAllWindows()
-    print("Program terminated")
+    print("Program Closed")
 
 
 if __name__ == '__main__':
