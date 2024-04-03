@@ -1,13 +1,19 @@
 import json
+from typing import Dict, Tuple
 from config import SAVE_PATH
+from utilities import GameData
 
 
-def load_from_file():
+def load_from_file() -> Tuple[Dict, Dict, Dict]:
     """
     Loads the game state data from save.json or creates one from setup.json
+    :return returns 3 dicts in order [Heroes Data, Game data, Powers data] read from save file or setup.
     """
-    h_dict, g_dict, p_dict = ([] for _ in range(3))
-    save_file = True
+    h_dict: Dict
+    g_dict: Dict
+    p_dict: Dict
+    h_dict, g_dict, p_dict = ({} for _ in range(3))
+    save_file: bool = True
     try:
         with open(SAVE_PATH + "save.json", 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -31,7 +37,7 @@ def load_from_file():
     return h_dict, g_dict, p_dict
 
 
-def save_data(game):
+def save_data(game: GameData) -> None:
     """
     Saves current game data to save.json file
     :param game: GameData class object
@@ -62,3 +68,4 @@ def save_data(game):
 
     with open(SAVE_PATH + 'save.json', 'w+', encoding='utf-8') as file:
         json.dump(save_dict, file, ensure_ascii=False, indent=4)
+    print("DONE!")
