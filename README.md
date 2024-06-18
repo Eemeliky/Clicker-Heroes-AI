@@ -12,6 +12,22 @@
 
 `pip install pywin32`
 
+`pip install pillow`
+
+#### if newest versions don't work try these:
+
+`pip install opencv-python==0.9.54`
+
+`pip install pyautogui==0.9.54`
+
+`pip install pynput==1.7.7`
+
+`pip install pywin32==306`
+
+`pip install pillow==10.3.0`
+
+with Python3.12
+
 ### Game settings
 Disable relic found popups    
 Set game to windowed mode   
