@@ -16,7 +16,7 @@
 
 #### if newest versions don't work try these:
 
-`pip install opencv-python==0.9.54`
+`pip install opencv-python==4.10.0.84`
 
 `pip install pyautogui==0.9.54`
 
