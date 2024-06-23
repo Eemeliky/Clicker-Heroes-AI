@@ -1,11 +1,11 @@
 import cv2
-from typing import Tuple, List
+from typing import Tuple, List, Sequence
 from config import IMG_PATH, CONFIDENCE_THRESHOLD, DEBUG
 from renderer import get_screenshot, render
 import numpy as np
 
 
-def template_matching(needle_img: np.ndarray, base_img: np.ndarray, BITWISE=False) -> Tuple[float, Tuple[int, int]]:
+def template_matching(needle_img: np.ndarray, base_img: np.ndarray, BITWISE=False) -> tuple[float, Sequence[int]]:
     """
     Function for template matching
     :param needle_img: Needle image. Image we are looking for
@@ -26,16 +26,14 @@ def find_hero(hero_name: str, gilded: bool) -> Tuple[int, int]:
     :param gilded: True for gilded, False for not gilded.
     :return: Position of hero's name on the screenshot as (x,y).
     """
-
     img: np.ndarray = get_screenshot()
-    img_g: np.ndarray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    game_img: np.ndarray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     image_name: str = IMG_PATH + 'heroes/' + hero_name + '.png'
-    needle_img: np.ndarray = cv2.imread(image_name, 0)
+    if gilded:
+        image_name = IMG_PATH + 'heroes/' + hero_name + '_gilded.png'
 
-    if not gilded:
-        needle_img = cv2.bitwise_not(needle_img)
-
-    confidence, (x, y) = template_matching(needle_img, img_g, BITWISE=True)
+    needle_img: np.ndarray = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
+    confidence, (x, y) = template_matching(needle_img, game_img)
     found: bool = (confidence > CONFIDENCE_THRESHOLD) & ((y + 75) < 600)
     if found:
         width: int = needle_img.shape[1]
@@ -50,13 +48,13 @@ def find_hero(hero_name: str, gilded: bool) -> Tuple[int, int]:
 
 def present_detection(game_level: int) -> bool:
     """
-    Gets pixel value from the postion where the present appears every 10th level after level 100.
+    Gets pixel value from the position where the present appears every 10th level after level 100.
     :param game_level: Level of the game
     :return: True if present is there
     """
     img: np.ndarray = get_screenshot()
     if game_level > 100:
-        return (img[517, 999, :] == np.array([245, 128, 128])).all()  # RGB
+        return (img[500, 1001, :] == np.array([245, 128, 128])).all()  # RGB
     return False
 
 
@@ -66,9 +64,10 @@ def get_chest_name_img() -> np.ndarray:
     :return: Cropped image as negative
     """
     img: np.ndarray = get_screenshot(BGR=True)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_crop: np.ndarray = img[220:430, 255:810]
-    return cv2.bitwise_not(img_crop)
+    img_g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_crop: np.ndarray = img_g[330:375, 450:600]
+    img_n = cv2.bitwise_not(img_crop)
+    return img_n
 
 
 def gilding_matching(base_img: np.ndarray, hero_name: str) -> float:
@@ -78,9 +77,8 @@ def gilding_matching(base_img: np.ndarray, hero_name: str) -> float:
     :return: Confidence that name of the hero is on the base_img
     """
     img_name: str = IMG_PATH + 'heroes/' + hero_name + '.png'
-    needle_img: np.ndarray = cv2.imread(img_name, 0)
-    needle_img = cv2.bitwise_not(needle_img)
-    confidence, _ = template_matching(needle_img, base_img, BITWISE=True)
+    hero_img_g: np.ndarray = cv2.imread(img_name, cv2.IMREAD_GRAYSCALE)
+    confidence, _ = template_matching(hero_img_g, base_img, BITWISE=True)
     return confidence
 
 
@@ -177,7 +175,7 @@ def read_game_level(level_string: str) -> int:
                     break
                 results: np.ndarray = cv2.matchTemplate(img_crop, needle_img, cv2.TM_CCOEFF_NORMED)
                 _, max_conf, _, _ = cv2.minMaxLoc(results)
-                locations: np.ndarray = np.where(results > 0.67)
+                locations = np.where(results > 0.67)
                 for point in zip(*locations[::-1]):
                     if point[0] < best_guess[0] or (point[0] == best_guess[0] and max_conf > best_confidence):
                         best_guess[0] = point[0]

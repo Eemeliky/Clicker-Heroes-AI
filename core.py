@@ -41,9 +41,9 @@ def upgrade_normal(game, img):
                 hero.level_up(CTRL=True)
         else:
             hero.level_up()
-            if hero.level % 5 == 0:
+            if hero.level % 15 == 0:  # PROBLEM WITH LEVEL 35
                 r_level = read_hero_level(hero.name_pos[1])
-                if r_level > 0:
+                if 0 < r_level != hero.level:
                     print(f'Adjusting hero level to {r_level}')
                     hero.level = r_level
             game.update_hero_timer()

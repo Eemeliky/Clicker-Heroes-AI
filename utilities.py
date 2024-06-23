@@ -123,6 +123,7 @@ class Hero:
 
     def gild(self):
         self.gilded = True
+        print(f"{self.name} gilded!")
 
     def found(self) -> bool:
         (x, y) = dts.find_hero(self.name, self.gilded)
@@ -283,15 +284,16 @@ class GameData:
                 x, y = config.AC_POINT
                 move_to(x, y)
         if dts.present_detection(self.level):
-            click_on_point(953, 506)
-            rnd.sleep(1 / 2)
+            click_on_point(1001, 500)
+            rnd.sleep(1/2)
+            click_on_point(500, 300)
             idx: int = chest_handler(self.heroes)
             if idx > 0:
                 self.heroes[idx].gild()
             else:
                 print("No suitable hero found! -> Gilding none")
-            click_on_point(832, 120)
-            rnd.sleep(1 / 2)
+            click_on_point(800, 130)
+            rnd.sleep(1/2)
 
     def ascend(self) -> None:
         self.ascensions += 1
@@ -319,7 +321,7 @@ class GameData:
 
 # TODO: probably broken
     def transcend(self) -> None:
-        print("Transcending..")
+        print("Transcending...")
         self.transcends += 1
         self.ascensions = 0
         config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
@@ -348,17 +350,18 @@ def chest_handler(heroes: List[Hero]) -> int:
     :param heroes: List of heroes
     :return index of the best match for gilding
     """
-    click_on_point(523, 324, False)
+    click_on_point(523, 324)
     rnd.sleep(2)
     img_n: np.ndarray = dts.get_chest_name_img()
     conf_of_best: float = 0.0
     idx_of_best: int = 0
     for idx, hero in enumerate(heroes):
         tmp_conf: float = dts.gilding_matching(img_n, hero.name)
-        if tmp_conf > 0.9:
+        if tmp_conf > 0.85:
             return idx
-        if tmp_conf > conf_of_best and tmp_conf > config.CONFIDENCE_THRESHOLD:
+        if tmp_conf > conf_of_best and tmp_conf > 0.65:
             idx_of_best = idx
+            conf_of_best = tmp_conf
     return idx_of_best
 
 
