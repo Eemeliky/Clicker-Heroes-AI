@@ -29,9 +29,9 @@ GAME_NAME = 'Clicker Heroes'
 AC_POINT = (775, 365)  # Only point where autoclicker works
 NEW_GAME_LEVEL = [171, 205, 195]  # pixel values for new game level at (x, y) == (812,47)
 LEVEL_UP_X = 157  # Level up button x-coordinate
-SKILL_X = 197  # Level up skill x-coordinate
+SKILL_X = 198  # Level up skill x-coordinate
 SKILL_X_OFFSET = 29  # Pixels between skill icons
-SKILL_Y_OFFSET = 41
+SKILL_Y_OFFSET = 42
 LEVEL_UP_Y_OFFSET = 15
 IMG_PATH = 'images/'
 SAVE_PATH = 'saves/'
