@@ -22,18 +22,19 @@ def on_release(key):
 
 
 def game_functions(game):
-    game.detections()
+    util.game_auto_clicker(game)
     game.level_checks()
     core.power_use_logic(game)
     util.auto_click()
-    if game.hero.found():
-        core.hero_leveling_logic(game)
-    else:
-        util.scroll_down(game)
+    if not game.boss_timer:
+        game.detections()
+        if game.hero.found():
+            core.hero_leveling_logic(game)
+        else:
+            util.scroll_down(game)
 
 
 def game_loop(game):
-    util.game_auto_clicker()
     global LOGIC_RUNNING
     print("SETUP DONE!")
     while game.control_window.running:
