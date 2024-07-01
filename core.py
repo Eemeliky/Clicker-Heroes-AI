@@ -31,9 +31,12 @@ def upgrade_normal(game, img):
                 pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
             if max(pixel_val) > 50:
                 hero.level_skill()
-        else:
+        elif hero.lvl_off_sync:
             print(f'Adjusting hero level to {r_level}')
             hero.level = r_level
+            hero.lvl_off_sync = False
+        else:
+            hero.lvl_off_sync = True
 
     elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
         if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
@@ -41,7 +44,7 @@ def upgrade_normal(game, img):
                 hero.level_up(CTRL=True)
         else:
             hero.level_up()
-            if hero.level % 15 == 0:  # PROBLEM WITH LEVEL 35
+            if hero.level % 20 == 0:
                 r_level = read_hero_level(hero.name_pos[1])
                 if 0 < r_level != hero.level:
                     print(f'Adjusting hero level to {r_level}')

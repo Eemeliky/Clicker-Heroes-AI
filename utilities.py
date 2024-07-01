@@ -74,6 +74,7 @@ class Hero:
         self.gilded = gilded
         self.unique_ups = unique_ups
         self.name_pos = (-1, -1)
+        self.lvl_off_sync = False
 
     def level_up(self, CTRL=False):
         x, y = self.name_pos
@@ -185,6 +186,7 @@ class GameData:
         self.boss_timer = 0.0
         self.grind_timer = 0.0
         self.level_up_timer = 0.0
+        self.clickers_set = False  # State of possible game auto clickers
 
     def reset_hero_queue(self) -> None:
         self.hero_index = 0
@@ -280,7 +282,7 @@ class GameData:
             if x > 0:
                 move_to(x, y)
                 for _ in range(12):
-                    auto_click(POINT_CHECK=False)
+                    auto_click(WAIT=1/20, POINT_CHECK=False)
                 x, y = config.AC_POINT
                 move_to(x, y)
         if dts.present_detection(self.level):
@@ -307,6 +309,7 @@ class GameData:
         self.boss_timer = 0.0
         self.grind_timer = 0.0
         self.unlocked_powers = 0
+        self.clickers_set = False
         click_on_point(997, 229, center=False)
         rnd.sleep(1/2)
         img = rnd.get_screenshot()
@@ -316,8 +319,8 @@ class GameData:
             rnd.sleep(1/2)
         click_on_point(485, 386)
         rnd.sleep(1)
-        game_auto_clicker()
-        rnd.sleep(1 / 5)
+        game_auto_clicker(self)
+        rnd.sleep(1/5)
 
 # TODO: probably broken
     def transcend(self) -> None:
@@ -335,9 +338,9 @@ class GameData:
         self.grind_timer = 0.0
         self.unlocked_powers = 0
         click_on_point(490, 120, center=False)
-        rnd.sleep(1 / 2)
+        rnd.sleep(1/2)
         click_on_point(315, 235, center=False)
-        rnd.sleep(1 / 8)
+        rnd.sleep(1/8)
         img = rnd.get_screenshot()
         if img[525, 445, 0] > 100:
             click_on_point(445, 525, center=False)
@@ -376,24 +379,29 @@ def click_on_point(x: int, y: int, center=True, CTRL=False) -> None:
     if CTRL:
         keyboard: rnd.Controller = rnd.Controller()
         with keyboard.pressed(rnd.Key.ctrl_l):
-            rnd.sleep(1 / 10)
+            rnd.sleep(1/10)
             pyautogui.click()
 
     if not CTRL:
-        rnd.sleep(1 / 2000)  # Extra wait because the game is not fast enough to register cursor movement
+        rnd.sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
         pyautogui.click()
 
     if center:
         pyautogui.moveTo(config.AC_POINT)
 
 
-def game_auto_clicker() -> None:
+def game_auto_clicker(game: GameData) -> None:
     """
     Setups the game's own autoclicker if it's bought
     """
-    if config.NUMBER_OF_CLICKERS > 0:
+
+    if config.NUMBER_OF_CLICKERS == 0 or game.clickers_set:
+        return
+
+    elif not game.clickers_set:
         for _ in range(config.NUMBER_OF_CLICKERS):
             click_on_point(990, 338)
+        game.clickers_set = True
 
 
 def get_pixel_val(x: int = 0, y: int = 0) -> np.ndarray:
@@ -477,7 +485,7 @@ def scroll_down(game: GameData) -> None:
             pyautogui.scroll(scroll_amount)
             x, y = config.AC_POINT
             move_to(x, y)
-            rnd.sleep(1 / 2000)
+            rnd.sleep(1/2000)
 
 
 def reset_scroll() -> None:
@@ -491,7 +499,7 @@ def reset_scroll() -> None:
         img = rnd.get_screenshot()
     x, y = config.AC_POINT
     move_to(x, y)
-    rnd.sleep(1 / 2000)
+    rnd.sleep(1/2000)
 
 
 def auto_click(WAIT: float = 1/2000, POINT_CHECK=True) -> None:
