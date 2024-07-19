@@ -173,7 +173,7 @@ class GameData:
     """
 
     def __init__(self, level: int, heroes: List[Hero], h_idx: int,
-                 powers: List[Power], powers_num: int, ascension: int, transcend: int):
+                 powers: List[Power], powers_num: int, ascension: int, transcend: int, global_skill_num: int):
         self.heroes = heroes
         self.hero_index = h_idx
         self.hero = self.heroes[self.hero_index]
@@ -187,6 +187,7 @@ class GameData:
         self.grind_timer = 0.0
         self.level_up_timer = 0.0
         self.clickers_set = False  # State of possible game auto clickers
+        self.global_skill_num = global_skill_num
 
     def reset_hero_queue(self) -> None:
         self.hero_index = 0
@@ -310,6 +311,7 @@ class GameData:
         self.grind_timer = 0.0
         self.unlocked_powers = 0
         self.clickers_set = False
+        self.global_skill_num = 0
         click_on_point(997, 229, center=False)
         rnd.sleep(1/2)
         img = rnd.get_screenshot()
@@ -464,6 +466,7 @@ def create_game_data(h_data: Dict[str, Dict], g_data: Dict[str, Any], p_data: Di
                               powers_num,
                               g_data["Ascension level"],
                               g_data["Transcend level"],
+                              g_data["Global skill num"]
                               )
     config.set_level_guide(ascensions=game.ascensions, transcends=game.transcends)
     return game

@@ -4,7 +4,7 @@
             "Level": 0,
             "Level ceiling": 1,
             "Skill level": 0,
-            "Max skill level": 7,
+            "Max skill level": 5,
             "Gilded": false,
             "Unique skills": false
         },
@@ -310,6 +310,7 @@
         "Level": 1,
         "Ascension level": 0,
         "Transcend level": 0,
-        "Current hero": "Cid, the Helpful Adventurer"
+        "Current hero": "Cid, the Helpful Adventurer",
+        "Global skill num": 0
     }
 }

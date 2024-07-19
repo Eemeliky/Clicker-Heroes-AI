@@ -27,10 +27,15 @@ def upgrade_normal(game, img):
         r_level = read_hero_level(y)
         if r_level == hero.level or r_level == 0:
             pixel_val = []
+            print(y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level))
             for i in range(3):
                 pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
             if max(pixel_val) > 50:
                 hero.level_skill()
+                if hero.skill_level == 1:
+                    game.global_skill_num += hero.max_skill_level - 1
+                else:
+                    game.global_skill_num -= 1
         elif hero.lvl_off_sync:
             print(f'Adjusting hero level to {r_level}')
             hero.level = r_level
@@ -85,6 +90,9 @@ def hero_leveling_logic(game):
 
         elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
             # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due to low increase to dps
+            game.next_hero()
+
+        elif game.global_skill_num > 0 and hero.skill_level == hero.max_skill_level:
             game.next_hero()
 
         else:

@@ -64,6 +64,7 @@ def save_data(game: GameData) -> None:
                               'Ascension level': game.ascensions,
                               'Transcend level': game.transcends,
                               'Current hero': game.hero.name,
+                              'Global skill num': game.global_skill_num
                               }
 
     with open(SAVE_PATH + 'save.json', 'w+', encoding='utf-8') as file:
