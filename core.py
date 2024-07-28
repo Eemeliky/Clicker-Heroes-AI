@@ -27,7 +27,6 @@ def upgrade_normal(game, img):
         r_level = read_hero_level(y)
         if r_level == hero.level or r_level == 0:
             pixel_val = []
-            print(y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level))
             for i in range(3):
                 pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
             if max(pixel_val) > 50:
@@ -46,10 +45,12 @@ def upgrade_normal(game, img):
     elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
         if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
             if rnd.np.max(img[y + 43, 125:165, 0]) < 255:
-                hero.level_up(CTRL=True)
+                hero.level_up(ctrl=True)
         else:
             hero.level_up()
-            if hero.level % 20 == 0:
+            if hero.level == 1:
+                game.best_hero_index = game.hero_index
+            elif hero.level % 20 == 0:
                 r_level = read_hero_level(hero.name_pos[1])
                 if 0 < r_level != hero.level:
                     print(f'Adjusting hero level to {r_level}')
@@ -68,7 +69,7 @@ def upgrade_functions(game):
         if game.hero.skill_level < game.hero.max_skill_level or LEVEL_OVER_STEP < 100:
             img = rnd.get_screenshot()
         else:
-            img = rnd.get_screenshot(CTRL=True)
+            img = rnd.get_screenshot(ctrl=True)
         upgrade_normal(game, img)
 
 
@@ -100,7 +101,7 @@ def hero_leveling_logic(game):
             upgrade_functions(game)
             timer = game.get_hero_timer()
             if lvl_clg != hero.level_ceiling or timer > WAIT_TIME:
-                game.next_hero()
+                game.next_hero(timer > WAIT_TIME)
 
 
 def loop_basic_powers(game):

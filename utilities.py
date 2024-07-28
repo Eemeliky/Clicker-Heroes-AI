@@ -76,12 +76,12 @@ class Hero:
         self.name_pos = (-1, -1)
         self.lvl_off_sync = False
 
-    def level_up(self, CTRL=False):
+    def level_up(self, ctrl=False):
         x, y = self.name_pos
-        if CTRL:
-            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15, CTRL=CTRL)
+        if ctrl:
+            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15, ctrl=ctrl)
             self.level += 100
-        if not CTRL:
+        if not ctrl:
             click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15)
             self.level += 1
         if self.level >= self.level_ceiling and not self.skill_unlocked():
@@ -95,12 +95,12 @@ class Hero:
             self.raise_level_ceiling()
         print(f"{self.name} Skill level: {self.skill_level}/{self.max_skill_level}")
 
-    def reset(self, gildReset=False):
+    def reset(self, fullreset=False):
         self.level = 0
         self.skill_level = 0
         self.level_ceiling = config.LEVEL_GUIDE[0]
         self.name_pos = (-1, -1)
-        if gildReset:
+        if fullreset:
             self.gilded = False
 
     def skill_unlocked(self):
@@ -132,6 +132,9 @@ class Hero:
             self.name_pos = (x, y)
             return True
         return False
+
+    def print_level(self):
+        print(self.name, "lvl", self.level)
 
 
 class Power:
@@ -172,10 +175,11 @@ class GameData:
     Class for game variables
     """
 
-    def __init__(self, level: int, heroes: List[Hero], h_idx: int,
-                 powers: List[Power], powers_num: int, ascension: int, transcend: int, global_skill_num: int):
+    def __init__(self, level: int, heroes: List[Hero], hero_idx: int,
+                 powers: List[Power], powers_num: int, ascension: int, transcend: int,
+                 global_skill_num: int, best_hero_idx: int):
         self.heroes = heroes
-        self.hero_index = h_idx
+        self.hero_index = hero_idx
         self.hero = self.heroes[self.hero_index]
         self.powers = powers
         self.unlocked_powers = powers_num
@@ -186,19 +190,21 @@ class GameData:
         self.boss_timer = 0.0
         self.grind_timer = 0.0
         self.level_up_timer = 0.0
-        self.clickers_set = False  # State of possible game auto clickers
+        self.clickers_set = False  # Set to true if you have game's own auto clickers
         self.global_skill_num = global_skill_num
+        self.best_hero_index = best_hero_idx
 
     def reset_hero_queue(self) -> None:
         self.hero_index = 0
         self.hero = self.heroes[self.hero_index]
         self.update_hero_timer()
 
-    def next_hero(self) -> None:
-        if self.hero_index == 0 and self.hero.level >= 100:
-            print("Skipping Cid")
-        else:
-            print(self.hero.name, "lvl", self.hero.level)
+    def next_hero(self, timerlimit=False) -> None:
+        self.hero.print_level()
+        if self.best_hero_index == self.hero_index and self.global_skill_num == 0:
+            if self.hero.level % 1000 != 0 or not timerlimit:
+                self.update_hero_timer()
+                return
         self.hero_index += 1
         if self.hero_index == len(self.heroes):
             self.hero_index = 0
@@ -213,6 +219,7 @@ class GameData:
 
     def reset(self) -> bool:
         amenhotep: Hero = self.heroes[18]
+        """
         if self.level == 1 and self.ascensions > 4:
             print("Transcending..")
             print()
@@ -220,8 +227,9 @@ class GameData:
             print(f"  {self.transcends}. Transcend")
             self.transcend()
             return True
-        if self.grind_timer:
-            if amenhotep.level >= 150 and self.level > (130 + (config.ASCENSION_STEP * self.ascensions)):
+        """
+        if self.grind_timer and amenhotep.level >= 150:
+            if self.level > 130 and self.global_skill_num == 0:
                 print("Ascending..")
                 print()
                 print()
@@ -283,7 +291,7 @@ class GameData:
             if x > 0:
                 move_to(x, y)
                 for _ in range(12):
-                    auto_click(WAIT=1/20, POINT_CHECK=False)
+                    auto_click(wait=1/20, check=False)
                 x, y = config.AC_POINT
                 move_to(x, y)
         if dts.present_detection(self.level):
@@ -319,19 +327,18 @@ class GameData:
         if (img[367, 451, :] == np.array([69, 215, 35])).all():
             click_on_point(451, 367, center=False)
             rnd.sleep(1/2)
-        click_on_point(485, 386)
+        click_on_point(485, 420)
         rnd.sleep(1)
         game_auto_clicker(self)
         rnd.sleep(1/5)
 
-# TODO: probably broken
     def transcend(self) -> None:
         print("Transcending...")
         self.transcends += 1
         self.ascensions = 0
-        config.set_level_guide(ascensions=self.ascensions, transcends=self.transcends)
+        config.set_level_guide(self.ascensions, self.transcends)
         for hero in self.heroes:
-            hero.reset(gildReset=True)
+            hero.reset(fullreset=True)
         for power in self.powers:
             power.reset()
         self.reset_hero_queue()
@@ -339,14 +346,11 @@ class GameData:
         self.boss_timer = 0.0
         self.grind_timer = 0.0
         self.unlocked_powers = 0
-        click_on_point(490, 120, center=False)
+        click_on_point(465, 145, center=False)
         rnd.sleep(1/2)
-        click_on_point(315, 235, center=False)
+        click_on_point(265, 270, center=False)
         rnd.sleep(1/8)
-        img = rnd.get_screenshot()
-        if img[525, 445, 0] > 100:
-            click_on_point(445, 525, center=False)
-        click_on_point(400, 470)
+        click_on_point(410, 450)
 
 
 def chest_handler(heroes: List[Hero]) -> int:
@@ -370,21 +374,21 @@ def chest_handler(heroes: List[Hero]) -> int:
     return idx_of_best
 
 
-def click_on_point(x: int, y: int, center=True, CTRL=False) -> None:
+def click_on_point(x: int, y: int, center=True, ctrl=False) -> None:
     """
-    :param CTRL: flag for control click
+    :param ctrl: flag for control click
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
     :param center: flag for returning to autoclicker point
     """
     pyautogui.moveTo(x, y)
-    if CTRL:
+    if ctrl:
         keyboard: rnd.Controller = rnd.Controller()
         with keyboard.pressed(rnd.Key.ctrl_l):
             rnd.sleep(1/10)
             pyautogui.click()
 
-    if not CTRL:
+    if not ctrl:
         rnd.sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
         pyautogui.click()
 
@@ -466,9 +470,10 @@ def create_game_data(h_data: Dict[str, Dict], g_data: Dict[str, Any], p_data: Di
                               powers_num,
                               g_data["Ascension level"],
                               g_data["Transcend level"],
-                              g_data["Global skill num"]
+                              g_data["Global skill num"],
+                              g_data["Best hero index"]
                               )
-    config.set_level_guide(ascensions=game.ascensions, transcends=game.transcends)
+    config.set_level_guide(game.ascensions, game.transcends)
     return game
 
 
@@ -505,27 +510,27 @@ def reset_scroll() -> None:
     rnd.sleep(1/2000)
 
 
-def auto_click(WAIT: float = 1/2000, POINT_CHECK=True) -> None:
+def auto_click(wait: float = 1/2000, check=True) -> None:
     """
     *5x CLICKS* on the autoclicker point
-    :param POINT_CHECK: Flag for checking if cursor is in autoclick point area
-    :param WAIT: wait time in seconds
+    :param check: Flag for checking if cursor is in autoclick point area
+    :param wait: wait time in seconds (s)
     """
     mouse: pynput.mouse.Controller = pynput.mouse.Controller()
     x, y = pyautogui.position()
-    if POINT_CHECK:
+    if check:
         if not (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) or \
                 not (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
             return
 
     mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(WAIT)
+    rnd.sleep(wait)
     mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(WAIT)
+    rnd.sleep(wait)
     mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(WAIT)
+    rnd.sleep(wait)
     mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(WAIT)
+    rnd.sleep(wait)
     mouse.click(pynput.mouse.Button.left)
 
 
