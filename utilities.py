@@ -202,7 +202,7 @@ class GameData:
     def next_hero(self, timerlimit=False) -> None:
         self.hero.print_level()
         if self.best_hero_index == self.hero_index and self.global_skill_num == 0:
-            if self.hero.level % 1000 != 0 or not timerlimit:
+            if self.hero.level % 1000 != 0 and not timerlimit:
                 self.update_hero_timer()
                 return
         self.hero_index += 1
