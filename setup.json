@@ -13,7 +13,7 @@
             "Level ceiling": 1,
             "Skill level": 0,
             "Max skill level": 5,
-            "Gilded": false,
+            "Gilded": true,
             "Unique skills": false
         },
         "Ivan, the Drunken Brawler": {
@@ -239,6 +239,14 @@
             "Max skill level": 4,
             "Gilded": false,
             "Unique skills": true
+        },
+        "Orntchya Gladeye, Didensy Banana": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
         }
     },
     "Powers": {
@@ -311,6 +319,7 @@
         "Ascension level": 0,
         "Transcend level": 0,
         "Current hero": "Cid, the Helpful Adventurer",
-        "Global skill num": 0
+        "Global skill num": 1,
+        "Best hero index": 0
     }
 }
