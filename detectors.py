@@ -54,7 +54,7 @@ def present_detection(game_level: int) -> bool:
     """
     img: np.ndarray = get_screenshot()
     if game_level > 100:
-        return (img[500, 1001, :] == np.array([245, 128, 128])).all()  # RGB
+        return (img[500, 1000, :] == np.array([245, 128, 128])).all()  # RGB
     return False
 
 
