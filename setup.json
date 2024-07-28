@@ -247,6 +247,14 @@
             "Max skill level": 4,
             "Gilded": false,
             "Unique skills": true
+        },
+        "Lilin": {
+            "Level": 0,
+            "Level ceiling": 1,
+            "Skill level": 0,
+            "Max skill level": 4,
+            "Gilded": false,
+            "Unique skills": true
         }
     },
     "Powers": {
