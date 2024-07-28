@@ -34,7 +34,7 @@ def find_hero(hero_name: str, gilded: bool) -> Tuple[int, int]:
 
     needle_img: np.ndarray = cv2.imread(image_name, cv2.IMREAD_GRAYSCALE)
     confidence, (x, y) = template_matching(needle_img, game_img)
-    found: bool = (confidence > CONFIDENCE_THRESHOLD) & ((y + 75) < 600)
+    found: bool = (confidence > CONFIDENCE_THRESHOLD) & ((y + 125) < 600)
     if found:
         width: int = needle_img.shape[1]
         height: int = needle_img.shape[0]

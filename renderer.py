@@ -29,7 +29,7 @@ def move_game_win(hwnd: int) -> None:
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
-def get_screenshot(BGR=False, ctrl=False) -> np.ndarray:
+def get_screenshot(BGR=False, ctrl=False) -> np.ndarray[int]:
     """
     Takes screenshot from the game window
     :param ctrl: boolean, takes screenshot with key "ctrl" held down, Default = false
@@ -44,9 +44,9 @@ def get_screenshot(BGR=False, ctrl=False) -> np.ndarray:
         keyboard: Controller = Controller()
         with keyboard.pressed(Key.ctrl_l):
             sleep(0.5)
-            img_rgb: np.ndarray = array(ImageGrab.grab(bbox=bbox))  # noqa
+            img_rgb: np.ndarray[int] = array(ImageGrab.grab(bbox=bbox))  # noqa
     else:
-        img_rgb: np.ndarray = array(ImageGrab.grab(bbox=bbox))  # noqa
+        img_rgb: np.ndarray[int] = array(ImageGrab.grab(bbox=bbox))  # noqa
         if BGR:
             return cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
     return img_rgb

@@ -202,7 +202,7 @@ class GameData:
     def next_hero(self, timerlimit=False) -> None:
         self.hero.print_level()
         if self.best_hero_index == self.hero_index and self.global_skill_num == 0:
-            if self.hero.level % 1000 != 0 and not timerlimit:
+            if not self.next_hero_available() and not timerlimit:
                 self.update_hero_timer()
                 return
         self.hero_index += 1
@@ -214,11 +214,18 @@ class GameData:
     def update_hero_timer(self) -> None:
         self.level_up_timer = time()
 
+    def next_hero_available(self) -> bool:
+        img: np.ndarray[int] = rnd.get_screenshot()
+        pixel_val = []
+        for i in range(3):
+            pixel_val.append(img[self.hero.name_pos[1] + 100, config.LEVEL_UP_X, i])
+        return max(pixel_val) > 128
+
     def get_hero_timer(self) -> float:
         return time() - self.level_up_timer
 
     def reset(self) -> bool:
-        amenhotep: Hero = self.heroes[18]
+        amenhotep: Hero = self.heroes[19]
         """
         if self.level == 1 and self.ascensions > 4:
             print("Transcending..")
@@ -294,6 +301,7 @@ class GameData:
                     auto_click(wait=1/20, check=False)
                 x, y = config.AC_POINT
                 move_to(x, y)
+        """
         if dts.present_detection(self.level):
             click_on_point(1001, 500)
             rnd.sleep(1/2)
@@ -305,6 +313,7 @@ class GameData:
                 print("No suitable hero found! -> Gilding none")
             click_on_point(800, 130)
             rnd.sleep(1/2)
+        """
 
     def ascend(self) -> None:
         self.ascensions += 1
@@ -320,12 +329,13 @@ class GameData:
         self.unlocked_powers = 0
         self.clickers_set = False
         self.global_skill_num = 0
+        self.best_hero_index = 0
         click_on_point(997, 229, center=False)
         rnd.sleep(1/2)
         img = rnd.get_screenshot()
         rnd.sleep(1/2)
-        if (img[367, 451, :] == np.array([69, 215, 35])).all():
-            click_on_point(451, 367, center=False)
+        if (img[370, 485, :] == np.array([68, 215, 35])).all():
+            click_on_point(485, 370, center=False)
             rnd.sleep(1/2)
         click_on_point(485, 420)
         rnd.sleep(1)
