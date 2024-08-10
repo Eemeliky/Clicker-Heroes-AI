@@ -13,7 +13,7 @@
             "Level ceiling": 1,
             "Skill level": 0,
             "Max skill level": 5,
-            "Gilded": true,
+            "Gilded": false,
             "Unique skills": false
         },
         "Ivan, the Drunken Brawler": {
@@ -399,7 +399,7 @@
         "Ascension level": 0,
         "Transcend level": 0,
         "Current hero": "Cid, the Helpful Adventurer",
-        "Global skill num": 1,
+        "Global skill num": 0,
         "Best hero index": 0
     }
 }
