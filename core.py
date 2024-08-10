@@ -1,4 +1,4 @@
-from config import LEVEL_UP_X, SKILL_Y_OFFSET, SKILL_X, SKILL_X_OFFSET, LEVEL_UP_Y_OFFSET, LEVEL_OVER_STEP, WAIT_TIME
+from config import LEVEL_UP_X, SKILL_Y_OFFSET, SKILL_X, SKILL_X_OFFSET, LEVEL_UP_Y_OFFSET, WAIT_TIME
 from detectors import read_hero_level
 import renderer as rnd
 
@@ -28,14 +28,15 @@ def upgrade_normal(game, img):
         if r_level == hero.level or r_level == 0:
             pixel_val = []
             for i in range(3):
-                pixel_val.append(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i])
+                pixel_val.append(int(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i]))
             if max(pixel_val) > 50:
                 hero.level_skill()
+                game.update_hero_timer()
                 if hero.skill_level == 1:
                     game.global_skill_num += hero.max_skill_level - 1
                 else:
                     game.global_skill_num -= 1
-        elif hero.lvl_off_sync:
+        elif hero.lvl_off_sync and r_level != 33 and r_level != 55:
             print(f'Adjusting hero level to {r_level}')
             hero.level = r_level
             hero.lvl_off_sync = False
@@ -43,8 +44,9 @@ def upgrade_normal(game, img):
             hero.lvl_off_sync = True
 
     elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
-        if LEVEL_OVER_STEP > 25 and (hero.level_ceiling - hero.level) > 99:
-            if rnd.np.max(img[y + 43, 125:165, 0]) < 255:
+        if (game.ascensions > 2 and game.hero_index != game.best_hero_index
+                and hero.level >= 10):
+            if rnd.np.max(img[y + 43, 125:165, 0]) < 250:
                 hero.level_up(ctrl=True)
         else:
             hero.level_up()
@@ -52,9 +54,10 @@ def upgrade_normal(game, img):
                 game.best_hero_index = game.hero_index
             elif hero.level % 20 == 0:
                 r_level = read_hero_level(hero.name_pos[1])
-                if 0 < r_level != hero.level:
-                    print(f'Adjusting hero level to {r_level}')
-                    hero.level = r_level
+                if r_level > 0 and r_level != 33 and r_level != 55:
+                    if r_level != hero.level:
+                        print(f'Adjusting hero level to {r_level}')
+                        hero.level = r_level
             game.update_hero_timer()
 
 
@@ -66,7 +69,8 @@ def upgrade_functions(game):
     if game.level < 3 and game.ascensions == 0 and game.hero_index == 0:
         upgrade_first_levels(game.hero)
     else:
-        if game.hero.skill_level < game.hero.max_skill_level or LEVEL_OVER_STEP < 100:
+        if (game.hero.level < 10 or game.ascensions < 3
+                or game.hero_index == game.best_hero_index):
             img = rnd.get_screenshot()
         else:
             img = rnd.get_screenshot(ctrl=True)
@@ -85,11 +89,10 @@ def hero_leveling_logic(game):
     if not game.boss_timer:
         hero = game.hero
         if hero.level > hero.level_ceiling:
-            # Should not be true under normal conditions
             while hero.level > hero.level_ceiling:
                 hero.raise_level_ceiling()
 
-        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.level_ceiling > 100):
+        elif (hero.name == 'Cid, the Helpful Adventurer') & (hero.skill_level == hero.max_skill_level):
             # If Cid is lvl 100 skip Cid, because leveling him beyond this is not useful due to low increase to dps
             game.next_hero()
 
@@ -97,11 +100,18 @@ def hero_leveling_logic(game):
             game.next_hero()
 
         else:
-            lvl_clg = hero.level_ceiling
+            old_ceiling = hero.level_ceiling
+            old_skill_lvl = hero.skill_level
             upgrade_functions(game)
             timer = game.get_hero_timer()
-            if lvl_clg != hero.level_ceiling or timer > WAIT_TIME:
-                game.next_hero(timer > WAIT_TIME)
+            if timer > WAIT_TIME:
+                if game.next_hero_available():
+                    game.next_hero()
+                else:
+                    game.reset_hero_queue()
+            elif old_ceiling != hero.level_ceiling or (old_skill_lvl != hero.skill_level and not hero.skill_unlocked()):
+                if game.next_hero_available():
+                    game.next_hero()
 
 
 def loop_basic_powers(game):
