@@ -114,7 +114,7 @@ def hero_leveling_logic(game):
                     game.next_hero()
 
 
-def loop_basic_powers(game):
+def use_basic_powers(game):
     """
     Loops through 1-7 powers excluding (Energize and Reload). Activates if power is ready.
     :param game: GameData class object
@@ -127,8 +127,45 @@ def loop_basic_powers(game):
     else:
         for idx in range(7):
             power = game.powers[idx]
+            if idx == 2 or idx == 4:
+                continue
             if power.ready():
                 power.activate()
+
+
+def use_dps_powers(game) -> None:
+    """
+    Uses DPS powers if possible on bosses
+    :param game: GameData class object
+    """
+    if 0 < game.unlocked_powers < 8:
+        use_basic_powers(game)
+
+    elif game.unlocked_powers == 8:
+        energize = game.powers[7]
+        lucky_strike = game.powers[2]
+        if energize.ready() and lucky_strike.ready():
+            energize.activate()
+            lucky_strike.activate()
+        else:
+            use_basic_powers(game)
+
+    elif game.unlocked_powers == len(game.powers):
+        energize = game.powers[7]
+        reload = game.powers[8]
+        if energize.ready() and reload.ready():
+            lucky_strike = game.powers[2]
+            golden_clicks = game.powers[4]
+            if lucky_strike.ready() and golden_clicks.ready():
+                # Huge DPS combo
+                lucky_strike.activate()
+                golden_clicks.activate()
+                energize.activate()
+                reload.activate()
+                lucky_strike.activate()
+                golden_clicks.activate()
+        else:
+            use_basic_powers(game)
 
 
 def power_use_logic(game):
@@ -136,38 +173,19 @@ def power_use_logic(game):
     Decides what to do with powers, unlocks them if possible and uses them in correct order in boss zones.
     :param game: GameData class object
     """
+    if game.powers[5].ready():  # Dark Ritual
+        game.powers[5].activate()
+
+    if game.powers[3].ready():  # Metal Detector
+        game.powers[3].activate()
+
     if not game.boss_timer and game.unlocked_powers < len(game.powers):
         power_unlocker(game)
+        return
 
-    elif game.boss_timer:
-        if 0 < game.unlocked_powers < 8:
-            loop_basic_powers(game)
-
-        elif game.unlocked_powers == 8:
-            energize = game.powers[7]
-            lucky_strike = game.powers[2]
-
-            if energize.ready() and lucky_strike.ready():
-                energize.activate()
-                lucky_strike.activate()
-            else:
-                loop_basic_powers(game)
-
-        elif game.unlocked_powers == len(game.powers):
-            energize = game.powers[7]
-            reload = game.powers[8]
-            if energize.ready() and reload.ready():
-                lucky_strike = game.powers[2]
-                golden_clicks = game.powers[4]
-                if lucky_strike.ready() and golden_clicks.ready():
-                    lucky_strike.activate()
-                    golden_clicks.activate()
-                    energize.activate()
-                    reload.activate()
-                    lucky_strike.activate()
-                    golden_clicks.activate()
-            else:
-                loop_basic_powers(game)
+    if game.boss_timer:
+        use_dps_powers(game)
+        return
 
 
 def power_unlocker(game):

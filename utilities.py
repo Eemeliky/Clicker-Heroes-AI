@@ -157,7 +157,7 @@ class Power:
     def unlock(self):
         self.unlocked = True
         print(self.name, "Unlocked")
-        if self.name == "The Dark Ritual":  # Instantly activate DR because it's passive power.
+        if self.name == "The Dark Ritual" or "Metal Detector":
             self.activate()
 
     def activate(self):
