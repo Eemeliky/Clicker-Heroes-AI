@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Any
 import cv2
 import numpy as np
 import win32gui
+
 from config import WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME
-from numpy import array
+from numpy import array, ndarray, dtype
 from PIL import ImageGrab
 from pynput.keyboard import Key, Controller
 from time import sleep
@@ -29,7 +30,7 @@ def move_game_win(hwnd: int) -> None:
     win32gui.MoveWindow(hwnd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, True)
 
 
-def get_screenshot(BGR=False, ctrl=False) -> np.ndarray[int]:
+def get_screenshot(BGR=False, ctrl=False) -> ndarray:
     """
     Takes screenshot from the game window
     :param ctrl: boolean, takes screenshot with key "ctrl" held down, Default = false
@@ -44,9 +45,9 @@ def get_screenshot(BGR=False, ctrl=False) -> np.ndarray[int]:
         keyboard: Controller = Controller()
         with keyboard.pressed(Key.ctrl_l):
             sleep(0.5)
-            img_rgb: np.ndarray[int] = array(ImageGrab.grab(bbox=bbox))  # noqa
+            img_rgb: np.ndarray[Any, dtype] = array(ImageGrab.grab(bbox=bbox))
     else:
-        img_rgb: np.ndarray[int] = array(ImageGrab.grab(bbox=bbox))  # noqa
+        img_rgb: np.ndarray[Any, dtype] = array(ImageGrab.grab(bbox=bbox))
         if BGR:
             return cv2.cvtColor(img_rgb, cv2.COLOR_RGB2BGR)
     return img_rgb

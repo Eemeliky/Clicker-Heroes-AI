@@ -1,5 +1,5 @@
 # Clicker-Heroes-AI (WIP)
-# (Not working, since the update on 12th of Dec changed game engine and UI of the game)
+# 
 ### ↓ Video about old working version ↓
  [![IMAGE ALT TEXT](http://img.youtube.com/vi/KrqjviscmE0/0.jpg)](http://www.youtube.com/watch?v=KrqjviscmE0 "Clicker Heroes AI")
 
@@ -26,9 +26,9 @@
 
 `pip install pillow==10.3.0`
 
-with Python3.12
+with Python 3.12
 
 ### Game settings
-Disable relic found popups    
-Set game to windowed mode   
-Set buy exact hero quantities ON
+- Disable relic found popups    
+- Set game to windowed mode   
+- Set buy exact hero quantities ON
