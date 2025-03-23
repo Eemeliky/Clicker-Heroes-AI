@@ -1,10 +1,11 @@
 import pyautogui
 from typing import List, Tuple, Dict, Any
-import config
 import tkinter as tk
 from time import time
 import pynput
 import numpy as np
+
+from config import *
 import detectors as dts
 import renderer as rnd
 
@@ -25,7 +26,7 @@ class ControlWindow:
         self.start_stop_button = tk.Button(self.root, text="Start/Stop", command=lambda: self.start_stop(),
                                            height=2, width=15)
         self.re_center_button = tk.Button(self.root, text="Re-center cursor",
-                                          command=lambda: pyautogui.moveTo(config.AC_POINT),
+                                          command=lambda: pyautogui.moveTo(AC_POINT),
                                           height=2, width=15)
         self.stop_button = tk.Button(self.root, text="QUIT", command=lambda: self.stop(),
                                      height=2, width=15, fg="red")
@@ -35,17 +36,17 @@ class ControlWindow:
         self.re_center_button.place(x=3, y=50)
         self.autoclicker_button.place(x=3, y=90)
         self.stop_button.place(x=3, y=150)
-        self.change_position()
+        self.root.geometry('+{}+{}'.format(WINDOW_WIDTH, round(WINDOW_HEIGHT - 260)))
 
     @staticmethod
     def start_stop():
         pyautogui.press("space")
-        pyautogui.moveTo(config.AC_POINT)
+        pyautogui.moveTo(AC_POINT)
 
     def autoclicker(self):
         self.only_autoclicker ^= True
         if self.only_autoclicker:
-            pyautogui.moveTo(config.AC_POINT)
+            pyautogui.moveTo(AC_POINT)
         print("Only Autoclicker:", self.only_autoclicker)
 
     def stop(self):
@@ -54,9 +55,6 @@ class ControlWindow:
 
     def run(self):
         self.root.mainloop()
-
-    def change_position(self):
-        self.root.geometry('+{}+{}'.format(config.WINDOW_WIDTH, round(config.WINDOW_HEIGHT - 260)))
 
 
 class Hero:
@@ -77,53 +75,52 @@ class Hero:
         self.lvl_off_sync = False
 
     def level_up(self, ctrl=False):
-        x, y = self.name_pos
-        if ctrl:
-            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15, ctrl=ctrl)
-            self.level += 100
-        if not ctrl:
-            click_on_point(config.LEVEL_UP_X - 40, y + config.LEVEL_UP_Y_OFFSET + 15)
-            self.level += 1
+        x = LVL_BTN_CENTER[0]
+        y = LVL_BTN_CENTER[1] + self.name_pos[1]
+        click_on_point(x, y, ctrl=ctrl)
+        self.level += 100 if ctrl else 1
+
         if self.level >= self.level_ceiling and not self.skill_unlocked():
             self.raise_level_ceiling()
 
-    def level_skill(self):
-        x, y = self.name_pos
-        click_on_point(config.SKILL_X + (config.SKILL_X_OFFSET * self.skill_level), y + config.SKILL_Y_OFFSET + 15)
+    def level_skill(self) -> None:
+        x = SKILLS_BTN_CENTER[0] + (SKILLS_BTN_GAP * self.skill_level)
+        y = SKILLS_BTN_CENTER[1] + self.name_pos[1]
+        click_on_point(x, y)
         self.skill_level += 1
         if self.level == self.level_ceiling:
             self.raise_level_ceiling()
         print(f"{self.name} Skill level: {self.skill_level}/{self.max_skill_level}")
 
-    def reset(self, fullreset=False) -> None:
+    def reset(self, full_reset=False) -> None:
         self.level = 0
         self.skill_level = 0
         self.name_pos = (-1, -1)
-        if fullreset:
+        if full_reset:
             self.gilded = False
         if self.unique_ups:
-            self.level_ceiling = config.SKILL_UNLOCKS["Unique"][self.name][0]
+            self.level_ceiling = SKILL_UNLOCKS["Unique"][self.name][0]
             return
-        self.level_ceiling = config.SKILL_UNLOCKS["Normal"][0]
+        self.level_ceiling = SKILL_UNLOCKS["Normal"][0]
 
     def skill_unlocked(self):
         if self.skill_level < self.max_skill_level:
             if self.unique_ups:
-                level_req = config.SKILL_UNLOCKS["Unique"][self.name][self.skill_level]
+                level_req = SKILL_UNLOCKS["Unique"][self.name][self.skill_level]
             else:
-                level_req = config.SKILL_UNLOCKS["Normal"][self.skill_level]
+                level_req = SKILL_UNLOCKS["Normal"][self.skill_level]
             return self.level >= level_req
         return False
 
     def raise_level_ceiling(self):
-        if self.level_ceiling < max(config.LEVEL_GUIDE) and (self.skill_level < self.max_skill_level):
-            if self.level_ceiling not in config.LEVEL_GUIDE:
-                self.level_ceiling += config.LEVEL_OVER_STEP
+        if self.level_ceiling < max(LEVEL_GUIDE) and (self.skill_level < self.max_skill_level):
+            if self.level_ceiling not in LEVEL_GUIDE:
+                self.level_ceiling += LEVEL_OVER_STEP
             else:
-                idx = config.LEVEL_GUIDE.index(self.level_ceiling) + 1
-                self.level_ceiling = config.LEVEL_GUIDE[idx]
+                idx = LEVEL_GUIDE.index(self.level_ceiling) + 1
+                self.level_ceiling = LEVEL_GUIDE[idx]
         else:
-            self.level_ceiling += config.LEVEL_OVER_STEP
+            self.level_ceiling += LEVEL_OVER_STEP
 
     def gild(self):
         self.gilded = True
@@ -215,10 +212,10 @@ class GameData:
 
     def next_hero_available(self) -> bool:
         img: np.ndarray = rnd.get_screenshot()
-        pixel_val: List[int] = []
-        for i in range(3):
-            pixel_val.append(int(img[self.hero.name_pos[1] + 100, config.LEVEL_UP_X, i]))
-        return max(pixel_val) > 128
+        x = LVL_BTN_X
+        y = self.hero.name_pos[1] + LVL_BTN_GAP
+        pixel_val = [int(img[y, x, i]) for i in range(3)]
+        return max(pixel_val) > COLOR["128"]
 
     def get_hero_timer(self) -> float:
         return time() - self.level_up_timer
@@ -242,18 +239,18 @@ class GameData:
 
     def boss_level_checks(self) -> None:
         img: np.ndarray = rnd.get_screenshot()
-        if (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
+        if new_level_available(img):
             print("  BOSS DEFEATED IN {:.2f}s".format(time() - self.boss_timer))
             self.boss_timer = 0.0
             self.move_up_level()
 
-        elif (time() - self.boss_timer) > 30:
+        elif (time() - self.boss_timer) > BOSS_TIME:
             self.level -= 1
             self.boss_timer = 0.0
             self.grind_timer = time()
-            click_on_point(728, 65)
+            click_on_point(PREV_GAME_LEVEL_POINT)
             self.update_hero_timer()
-            print(f"  GRINDING TIME! ({config.GRIND_TIME}s)")
+            print(f"  GRINDING TIME! ({GRIND_TIME}s)")
 
     def level_checks(self) -> None:
         if self.reset_checks():
@@ -263,19 +260,20 @@ class GameData:
             self.boss_level_checks()
             return
 
-        if self.grind_timer and (time() - self.grind_timer) > config.GRIND_TIME:
+        if self.grind_timer and (time() - self.grind_timer) > GRIND_TIME:
             self.grind_timer = 0.0
             self.move_up_level()
             print("  GRIND ENDED!")
             return
 
         img = rnd.get_screenshot()
-        if not self.grind_timer and (img[47, 812, :] == np.array(config.NEW_GAME_LEVEL)).all():
+        if not self.grind_timer and new_level_available(img):
             self.move_up_level()
 
     def move_up_level(self) -> None:
         self.level += 1
-        click_on_point(822, 65)
+        click_on_point(NEXT_GAME_LEVEL_POINT)
+        # Tries to verify game level from the screen
         if self.level % 33 == 0 and self.level % 10 != 0:
             read_level = dts.read_game_level(str(self.level))
             if read_level > 0 and read_level != self.level:
@@ -290,29 +288,32 @@ class GameData:
     def detections(self) -> None:
         if self.level > 50:
             x, y = dts.find_bee()
-            if x > 0:
+            while x > 0:
                 move_to(x, y)
-                for _ in range(12):
-                    auto_click(wait=1/20, check=False)
-                x, y = config.AC_POINT
-                move_to(x, y)
+                for _ in range(3):
+                    auto_click(check=False)
+                x, y = dts.find_bee()
+            x, y = AC_POINT
+            move_to(x, y)
 
         if dts.present_detection(self.level):
-            click_on_point(1001, 500)
-            rnd.sleep(1/2)
-            click_on_point(510, 300)
-            rnd.sleep(1/10)
-            click_on_point(510, 300)
-            rnd.sleep(1/20)
+            click_on_point(OPEN_PRESENT_POINT)
+            rnd.sleep(0.5)
+            # Double click to make sure game registers click
+            click_on_point(START_CHEST_POINT)
+            rnd.sleep(0.1)
+            click_on_point(START_CHEST_POINT)
+            rnd.sleep(0.05)
             idx: int = chest_handler(self.heroes)
             if idx > 0:
                 self.heroes[idx].gild()
             else:
                 print("No suitable hero found! -> Gilding none")
-            click_on_point(800, 130)
-            rnd.sleep(1/10)
-            click_on_point(800, 130)
-            rnd.sleep(1/20)
+            # Double click to make sure game registers click
+            click_on_point(EXIT_CHEST_POINT)
+            rnd.sleep(0.1)
+            click_on_point(EXIT_CHEST_POINT)
+            rnd.sleep(0.05)
 
     def ascend(self) -> None:
         print("Ascending...")
@@ -332,24 +333,24 @@ class GameData:
         print()
         print()
         print(f"{self.ascensions}. Ascension")
-        click_on_point(997, 229, center=False)
-        rnd.sleep(1/2)
+        click_on_point(ASCEND_POINT, center=False)
+        rnd.sleep(0.5)
         img = rnd.get_screenshot()
-        rnd.sleep(1/2)
-        if (img[370, 485, :] == np.array([68, 215, 35])).all():
-            click_on_point(485, 370, center=False)
-            rnd.sleep(1/2)
-        click_on_point(485, 420)
+        rnd.sleep(0.5)
+        if is_correct_color(img, DEL_RELICS_POINT, color_as_list=DEL_RELICS_BTN_COLOR):
+            click_on_point(DEL_RELICS_POINT, center=False)
+            rnd.sleep(0.5)
+        click_on_point(CONFIRM_ASCEND_POINT)
         rnd.sleep(1)
-        game_auto_clicker(self)
-        rnd.sleep(1/5)
+        set_game_clickers(self)
+        rnd.sleep(0.2)
 
     def transcend(self) -> None:
         print("Transcending...")
         self.transcends += 1
         self.ascensions = 0
         for hero in self.heroes:
-            hero.reset(fullreset=True)
+            hero.reset(full_reset=True)
         for power in self.powers:
             power.reset()
         self.reset_hero_queue()
@@ -360,11 +361,25 @@ class GameData:
         print()
         print()
         print(f"  {self.transcends}. Transcend")
-        click_on_point(465, 145, center=False)
-        rnd.sleep(1/2)
-        click_on_point(265, 270, center=False)
-        rnd.sleep(1/8)
-        click_on_point(410, 450)
+        click_on_point(OUTSIDERS_MENU_POINT, center=False)
+        rnd.sleep(0.5)
+        click_on_point(TRANSCEND_POINT, center=False)
+        rnd.sleep(0.125)
+        click_on_point(CONFIRM_TRANS_POINT)
+
+
+def is_correct_color(img,
+                     point: Tuple[int, int],
+                     color_as_list: List[int] = None,
+                     r=256, g=256, b=256) -> bool:
+    if color_as_list:
+        r, g, b = color_as_list
+    x, y = point
+    return img[y, x, 0] == r and img[y, x, 1] == g and img[y, x, 2] == b
+
+
+def new_level_available(img) -> bool:
+    return is_correct_color(img, NEXT_GAME_LEVEL_TEST_POINT, color_as_list=NEW_GAME_LEVEL_COLOR)
 
 
 def chest_handler(heroes: List[Hero]) -> int:
@@ -373,13 +388,14 @@ def chest_handler(heroes: List[Hero]) -> int:
     :param heroes: List of heroes
     :return index of the best match for gilding
     """
-    click_on_point(523, 324)
+    click_on_point(OPEN_CHEST_POINT)
     rnd.sleep(2)
     img_n: np.ndarray = dts.get_chest_name_img()
     conf_of_best: float = 0.0
     idx_of_best: int = 0
     for idx, hero in enumerate(heroes):
         tmp_conf: float = dts.gilding_matching(img_n, hero.name)
+        # Terminate early if very confident
         if tmp_conf > 0.85:
             return idx
         if tmp_conf > conf_of_best and tmp_conf > 0.65:
@@ -388,44 +404,46 @@ def chest_handler(heroes: List[Hero]) -> int:
     return idx_of_best
 
 
-def click_on_point(x: int, y: int, center=True, ctrl=False) -> None:
+def click_on_point(point: Tuple[int, int], center=True, ctrl=False) -> None:
     """
+    :param point: (x, y) coordinates on the screen
     :param ctrl: flag for control click
-    :param x: x-coordinate on screen
-    :param y: y-coordinate on screen
     :param center: flag for returning to autoclicker point
     """
+    x, y = point
     pyautogui.moveTo(x, y)
     if ctrl:
         keyboard: rnd.Controller = rnd.Controller()
         with keyboard.pressed(rnd.Key.ctrl_l):
-            rnd.sleep(1/10)
+            rnd.sleep(0.1)
             pyautogui.click()
 
     if not ctrl:
-        rnd.sleep(1/2000)  # Extra wait because the game is not fast enough to register cursor movement
+        # Extra wait because the game is not fast enough to register inputs
+        rnd.sleep(CLICK_WAIT)
         pyautogui.click()
 
     if center:
-        pyautogui.moveTo(config.AC_POINT)
+        pyautogui.moveTo(AC_POINT)
 
 
-def game_auto_clicker(game: GameData) -> None:
+def set_game_clickers(game: GameData) -> None:
     """
     Setups the game's own autoclicker if it's bought
     """
 
-    if config.NUMBER_OF_CLICKERS == 0 or game.clickers_set:
+    if NUMBER_OF_CLICKERS == 0 or game.clickers_set:
         return
 
     elif not game.clickers_set:
-        for _ in range(config.NUMBER_OF_CLICKERS):
-            click_on_point(990, 338)
+        for _ in range(NUMBER_OF_CLICKERS):
+            click_on_point(GAME_CLICKERS_POINT)
         game.clickers_set = True
 
 
 def get_pixel_val(x: int = 0, y: int = 0) -> np.ndarray:
     """
+    Debug function for getting image pixel values
     :param x: x-coordinate on screen
     :param y: y-coordinate on screen
     :return: Pixel value of given point(x,y). Else pixel value of the point of the cursor.
@@ -437,12 +455,16 @@ def get_pixel_val(x: int = 0, y: int = 0) -> np.ndarray:
 
 
 def get_position() -> Tuple[int, int]:
+    """
+    Debug function for getting mouse position
+    """
     x, y = pyautogui.position()
     return x, y
 
 
 def create_game_data(h_data: Dict[str, Dict], g_data: Dict[str, Any], p_data: Dict[str, Dict]) -> GameData:
     """
+    Parses save data and creates the GameState object.
     :param h_data: Dict with heroes data
     :param g_data: Dict with game data
     :param p_data: Dict with powers data
@@ -497,16 +519,20 @@ def scroll_down(game: GameData) -> None:
     """
     if not game.boss_timer:
         img: np.ndarray = rnd.get_screenshot()
-        if img[570, 478, 2] > 190:
+        # Check if scroll bar is at bottom
+        x, y = SCROLL_BOTTOM_POINT
+        if img[y, x, 2] > COLOR["190"]:
             game.reset_hero_queue()
             reset_scroll()
         else:
-            move_to(465, 407)
+            x, y = SCROLLING_POINT
+            move_to(x, y)
+            # TODO: scroll amount weird?
             scroll_amount: int = round(-150 - 100 / game.level)
             pyautogui.scroll(scroll_amount)
-            x, y = config.AC_POINT
+            x, y = AC_POINT
             move_to(x, y)
-            rnd.sleep(1/2000)
+            rnd.sleep(CLICK_WAIT)
 
 
 def reset_scroll() -> None:
@@ -514,37 +540,35 @@ def reset_scroll() -> None:
     Returns to the top of the heroes list in the game window
     """
     img: np.ndarray = rnd.get_screenshot()
-    move_to(465, 407)
-    while not img[250, 488, 2] > 250:
+    x, y = SCROLLING_POINT
+    move_to(x, y)
+    i, j = SCROLL_TOP_POINT
+    while not img[j, i, 2] > COLOR["VERY_HIGH"]:
         pyautogui.scroll(5000)
         img = rnd.get_screenshot()
-    x, y = config.AC_POINT
+    x, y = AC_POINT
     move_to(x, y)
-    rnd.sleep(1/2000)
+    rnd.sleep(CLICK_WAIT)
 
 
-def auto_click(wait: float = 1/2000, check=True) -> None:
+def auto_click(wait=CLICK_WAIT, check=True, r=5) -> None:
     """
-    *5x CLICKS* on the autoclicker point
+    *CLICKS* clicks r amount of times on the current point
+    :param r: Number of clicks
     :param check: Flag for checking if cursor is in autoclick point area
-    :param wait: wait time in seconds (s)
+    :param wait: Wait time in seconds (s)
     """
     mouse: pynput.mouse.Controller = pynput.mouse.Controller()
     x, y = pyautogui.position()
     if check:
-        if not (config.AC_POINT[0] - 5 < x < config.AC_POINT[0] + 5) or \
-                not (config.AC_POINT[1] - 5 < y < config.AC_POINT[1] + 5):
+        if (not (AC_POINT[0] - 5 < x < AC_POINT[0] + 5)
+                or not (AC_POINT[1] - 5 < y < AC_POINT[1] + 5)):
             return
 
-    mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(wait)
-    mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(wait)
-    mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(wait)
-    mouse.click(pynput.mouse.Button.left)
-    rnd.sleep(wait)
-    mouse.click(pynput.mouse.Button.left)
+    for c_num in range(r):
+        mouse.click(pynput.mouse.Button.left)
+        if c_num + 1 != r:
+            rnd.sleep(wait)
 
 
 def move_to(x: int, y: int) -> None:

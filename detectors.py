@@ -1,8 +1,11 @@
 import cv2
 from typing import Tuple, List, Sequence
+import numpy as np
+
+from config import PRESENT_COLOR, OPEN_PRESENT_POINT
+from utilities import is_correct_color
 from config import IMG_PATH, CONFIDENCE_THRESHOLD, DEBUG
 from renderer import get_screenshot, render
-import numpy as np
 
 
 def template_matching(needle_img: np.ndarray, base_img: np.ndarray, BITWISE=False) -> tuple[float, Sequence[int]]:
@@ -54,7 +57,7 @@ def present_detection(game_level: int) -> bool:
     """
     img: np.ndarray = get_screenshot()
     if game_level > 100:
-        return (img[500, 1000, :] == np.array([245, 128, 128])).all()  # RGB
+        return is_correct_color(img, OPEN_PRESENT_POINT, color_as_list=PRESENT_COLOR)
     return False
 
 
@@ -158,7 +161,7 @@ def read_game_level(level_string: str) -> int:
     image_name: str = IMG_PATH + 'numbers/' + 'lvl_game.png'
     needle_img: np.ndarray = cv2.imread(image_name, 0)
     width: int = needle_img.shape[1]
-    img_crop: np.ndarray = img[100: 117, 675:895]
+    img_crop: np.ndarray = img[100:117, 675:895]
     confidence, (x, y) = template_matching(needle_img, img_crop)
     img_crop = img_crop[:, x+width:]
     if confidence > 0.5:

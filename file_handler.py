@@ -1,5 +1,6 @@
 import json
 from typing import Dict, Tuple
+
 from config import SAVE_PATH
 from utilities import GameData
 

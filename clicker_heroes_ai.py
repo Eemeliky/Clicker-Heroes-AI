@@ -1,11 +1,12 @@
 import cv2
 import core
-import file_handler as fh
-import utilities as util
 from pynput import keyboard
 import threading
-from config import DEBUG
 import time
+
+import file_handler as fh
+import utilities as util
+from config import DEBUG
 
 LOGIC_RUNNING = False
 
@@ -22,7 +23,7 @@ def on_release(key):
 
 
 def game_functions(game):
-    util.game_auto_clicker(game)
+    util.set_game_clickers(game)
     game.level_checks()
     core.power_use_logic(game)
     util.auto_click()

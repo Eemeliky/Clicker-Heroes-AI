@@ -2,12 +2,12 @@ from typing import List, Any
 import cv2
 import numpy as np
 import win32gui
-
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME
 from numpy import array, ndarray, dtype
 from PIL import ImageGrab
 from pynput.keyboard import Key, Controller
 from time import sleep
+
+from config import WINDOW_WIDTH, WINDOW_HEIGHT, GAME_NAME
 
 
 def find_game_win() -> int:

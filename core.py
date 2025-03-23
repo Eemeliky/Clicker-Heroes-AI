@@ -1,4 +1,4 @@
-from config import LEVEL_UP_X, SKILL_Y_OFFSET, SKILL_X, SKILL_X_OFFSET, LEVEL_UP_Y_OFFSET, WAIT_TIME
+from config import *
 from detectors import read_hero_level
 import renderer as rnd
 
@@ -8,9 +8,11 @@ def upgrade_first_levels(hero):
     Upgrades first 2 levels when template matching doesn't work, because achievements block the hero name.
     :param hero: Current hero from GameData
     """
+    y = 275
+    hero_name_position = (157, 235)
     img = rnd.get_screenshot()
-    if img[275, LEVEL_UP_X, 2] > 250:
-        hero.name_pos = (157, 235)
+    if img[y, LVL_BTN_X, 2] > COLOR["VERY_HIGH"]:
+        hero.name_pos = hero_name_position
         hero.level_up()
 
 
@@ -25,17 +27,18 @@ def upgrade_normal(game, img):
     x, y = hero.name_pos
     if hero.skill_unlocked():
         r_level = read_hero_level(y)
+        btn_x = SKILLS_BTN_X + (SKILLS_BTN_GAP * hero.skill_level)
+        btn_y = y + NAME_DIST["SKILLS_BTN"]
         if r_level == hero.level or r_level == 0:
-            pixel_val = []
-            for i in range(3):
-                pixel_val.append(int(img[y + SKILL_Y_OFFSET, SKILL_X + (SKILL_X_OFFSET * hero.skill_level), i]))
-            if max(pixel_val) > 50:
+            pixel_val = [int(img[btn_y, btn_x, i]) for i in range(3)]
+            if max(pixel_val) > COLOR["LOW"]:
                 hero.level_skill()
                 game.update_hero_timer()
                 if hero.skill_level == 1:
                     game.global_skill_num += hero.max_skill_level - 1
                 else:
                     game.global_skill_num -= 1
+        # Checks for possible misreads
         elif hero.lvl_off_sync and r_level != 33 and r_level != 55:
             print(f'Adjusting hero level to {r_level}')
             hero.level = r_level
@@ -43,17 +46,19 @@ def upgrade_normal(game, img):
         else:
             hero.lvl_off_sync = True
 
-    elif img[y + LEVEL_UP_Y_OFFSET, LEVEL_UP_X, 2] > 200:
+    elif img[y + NAME_DIST["LVL_BTN"], LVL_BTN_X, 2] > COLOR["HIGH"]:
         if (game.ascensions > 2 and game.hero_index != game.best_hero_index
                 and hero.level >= 10):
-            if rnd.np.max(img[y + 43, 125:165, 0]) < 250:
+            # TODO: Rewrite 100x levelling with the new buttons
+            if rnd.np.max(img[y + 43, 125:165, 0]) < COLOR["VERY_HIGH"]:
                 hero.level_up(ctrl=True)
         else:
             hero.level_up()
             if hero.level == 1:
                 game.best_hero_index = game.hero_index
             elif hero.level % 20 == 0:
-                r_level = read_hero_level(hero.name_pos[1])
+                r_level = read_hero_level(y)
+                # Checks for possible misreads
                 if r_level > 0 and r_level != 33 and r_level != 55:
                     if r_level != hero.level:
                         print(f'Adjusting hero level to {r_level}')
@@ -104,12 +109,13 @@ def hero_leveling_logic(game):
             old_skill_lvl = hero.skill_level
             upgrade_functions(game)
             timer = game.get_hero_timer()
-            if timer > WAIT_TIME:
+            if timer > HERO_WAIT_TIME:
                 if game.next_hero_available():
                     game.next_hero()
                 else:
                     game.reset_hero_queue()
-            elif old_ceiling != hero.level_ceiling or (old_skill_lvl != hero.skill_level and not hero.skill_unlocked()):
+            elif (old_ceiling != hero.level_ceiling or
+                  (old_skill_lvl != hero.skill_level and not hero.skill_unlocked())):
                 if game.next_hero_available():
                     game.next_hero()
 
@@ -126,9 +132,9 @@ def use_basic_powers(game):
                 power.activate()
     else:
         for idx in range(7):
-            power = game.powers[idx]
             if idx == 2 or idx == 4:
                 continue
+            power = game.powers[idx]
             if power.ready():
                 power.activate()
 
