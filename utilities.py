@@ -77,7 +77,7 @@ class Hero:
     def level_up(self, ctrl=False):
         x = LVL_BTN_CENTER[0]
         y = LVL_BTN_CENTER[1] + self.name_pos[1]
-        click_on_point(x, y, ctrl=ctrl)
+        click_on_point((x, y), ctrl=ctrl)
         self.level += 100 if ctrl else 1
 
         if self.level >= self.level_ceiling and not self.skill_unlocked():
@@ -86,7 +86,7 @@ class Hero:
     def level_skill(self) -> None:
         x = SKILLS_BTN_CENTER[0] + (SKILLS_BTN_GAP * self.skill_level)
         y = SKILLS_BTN_CENTER[1] + self.name_pos[1]
-        click_on_point(x, y)
+        click_on_point((x, y))
         self.skill_level += 1
         if self.level == self.level_ceiling:
             self.raise_level_ceiling()
